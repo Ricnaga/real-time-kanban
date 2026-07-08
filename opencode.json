@@ -1,21 +1,9 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "default_agent": "front-end-engineer",
   "instructions": [".opencode/rules/code-conventions.md"],
-  "agent": {
-    "front-end-engineer": {
-      "description": "Engenheiro frontend especialista em React/Next, Tailwind e performance",
-      "mode": "subagent",
-      "prompt": "{file:.opencode/prompts/front-end-engineer.md}",
-      "permission": {
-        "task": {
-          "ux-ui-designer": "allow"
-        }
-      }
-    },
-    "ux-ui-designer": {
-      "description": "Designer de componentes e telas, posicionamento e escolha do melhor componente",
-      "mode": "subagent",
-      "prompt": "{file:.opencode/prompts/ux-ui-designer.md}"
-    }
-  }
+  "skills": {
+    "paths": [".opencode/skills"]
+  },
+  "agents": ["front-end-engineer", "backend-engineer"]
 }

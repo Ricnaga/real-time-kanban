@@ -9,8 +9,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## Agentes
 
-- `@front-end-engineer` — engenheiro frontend React/Next/Tailwind/Performance
-- `@ux-ui-designer` — designer de componentes e telas
+- `@front-end-engineer` (`mode: primary`) — engenheiro frontend React/Next/Tailwind/Performance. Tab para ativar.
+- `@ux-ui-designer` (`mode: subagent`) — designer de componentes e telas. Invocar com `@ux-ui-designer`.
 
 ## Skills (carregar sob demanda)
 
