@@ -1,25 +1,26 @@
-import { createYoga, createPubSub } from 'graphql-yoga'
-import { createServer } from 'node:http'
+import { useHive } from '@graphql-hive/yoga'
+import { usePrometheus } from '@graphql-yoga/plugin-prometheus'
 import { drizzle } from 'drizzle-orm/node-postgres'
+import { createPubSub, createYoga } from 'graphql-yoga'
+import { createServer } from 'node:http'
 import pg from 'pg'
-import * as schema from './backend/infra/database/drizzle/schema'
+import { KanbanController } from './backend/controllers/kanban.controller'
+import { CreateActionUseCase } from './backend/domain/use-cases/create-action.use-case'
+import { CreateTaskUseCase } from './backend/domain/use-cases/create-task.use-case'
+import { DeleteActionUseCase } from './backend/domain/use-cases/delete-action.use-case'
+import { DeleteTaskUseCase } from './backend/domain/use-cases/delete-task.use-case'
+import { GetStatisticsUseCase } from './backend/domain/use-cases/get-statistics.use-case'
+import { MoveTaskUseCase } from './backend/domain/use-cases/move-task.use-case'
+import { ReorderActionUseCase } from './backend/domain/use-cases/reorder-action.use-case'
+import { UpdateTaskUseCase } from './backend/domain/use-cases/update-task.use-case'
 import {
   DrizzleActionRepository,
   DrizzleTaskRepository,
 } from './backend/infra/database/drizzle/repo'
-import { MoveTaskUseCase } from './backend/domain/use-cases/move-task.use-case'
-import { CreateTaskUseCase } from './backend/domain/use-cases/create-task.use-case'
-import { UpdateTaskUseCase } from './backend/domain/use-cases/update-task.use-case'
-import { DeleteTaskUseCase } from './backend/domain/use-cases/delete-task.use-case'
-import { CreateActionUseCase } from './backend/domain/use-cases/create-action.use-case'
-import { DeleteActionUseCase } from './backend/domain/use-cases/delete-action.use-case'
-import { ReorderActionUseCase } from './backend/domain/use-cases/reorder-action.use-case'
-import { GetStatisticsUseCase } from './backend/domain/use-cases/get-statistics.use-case'
-import { KanbanController } from './backend/controllers/kanban.controller'
-import { schema as gqlSchema } from './bff/schema'
-import type { Context } from './bff/builder'
-import { usePrometheus } from '@graphql-yoga/plugin-prometheus'
-import { useHive } from '@graphql-hive/yoga'
+import * as schema from './backend/infra/database/drizzle/schema'
+import { createAdapters } from './bff/adapters'
+import type { Context } from './bff/pothos/builder'
+import { schema as gqlSchema } from './bff/pothos/schema'
 
 async function main() {
   const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL })
@@ -78,13 +79,15 @@ async function main() {
 
   await kanbanController.seed()
 
+  const adapters = createAdapters(kanbanController)
+
   const hiveToken = process.env.HIVE_TOKEN
   const hiveTarget = process.env.HIVE_TARGET
 
   const yoga = createYoga<Context>({
     schema: gqlSchema,
     context: () => ({
-      kanbanController,
+      adapters,
       pubSub,
     }),
     graphqlEndpoint: '/graphql',
