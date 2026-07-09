@@ -1,6 +1,5 @@
 import type { InferSelectModel } from 'drizzle-orm'
-import { boards, columns, cards } from './schema'
+import { actions, tasks } from './schema'
 
-export type BoardRow = InferSelectModel<typeof boards>
-export type ColumnRow = InferSelectModel<typeof columns>
-export type CardRow = InferSelectModel<typeof cards>
+export type ActionRow = InferSelectModel<typeof actions>
+export type TaskRow = InferSelectModel<typeof tasks>

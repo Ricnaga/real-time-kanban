@@ -1,180 +1,142 @@
-import { eq, asc, desc, and } from 'drizzle-orm'
+import { eq, asc, inArray } from 'drizzle-orm'
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres'
 import * as schema from './schema'
-import type { BoardRepository } from '../../../ports/board-repository.port'
-import { Board } from '../../../domain/entities/board.entity'
+import type { ActionRepository } from '../../../ports/action-repository.port'
+import type { TaskRepository } from '../../../ports/task-repository.port'
+import { Action } from '../../../domain/entities/action.entity'
+import { Task } from '../../../domain/entities/task.entity'
 
-export class DrizzleBoardRepository implements BoardRepository {
+export class DrizzleActionRepository implements ActionRepository {
   constructor(private readonly db: NodePgDatabase<typeof schema>) {}
 
-  async findById(id: string): Promise<Board | null> {
-    const boardRows = await this.db
+  async findAll() {
+    const rows = await this.db
       .select()
-      .from(schema.boards)
-      .where(eq(schema.boards.id, id))
+      .from(schema.actions)
+      .orderBy(asc(schema.actions.position))
+
+    return rows.map((r) => new Action(r.id, r.title, r.position, r.isDefault))
+  }
+
+  async findById(id: string) {
+    const [row] = await this.db
+      .select()
+      .from(schema.actions)
+      .where(eq(schema.actions.id, id))
       .limit(1)
 
-    if (boardRows.length === 0) return null
-    const boardRow = boardRows[0]
+    if (!row) return null
+    return new Action(row.id, row.title, row.position, row.isDefault)
+  }
 
-    const columnRows = await this.db
+  async save(action: Action) {
+    await this.db
+      .insert(schema.actions)
+      .values({
+        id: action.id,
+        title: action.title,
+        position: action.position,
+        isDefault: action.isDefault,
+      })
+      .onConflictDoUpdate({
+        target: schema.actions.id,
+        set: { title: action.title, position: action.position },
+      })
+  }
+
+  async delete(id: string) {
+    await this.db.delete(schema.actions).where(eq(schema.actions.id, id))
+  }
+
+  async updatePositions(items: Array<{ id: string; position: number }>) {
+    await this.db.transaction(async (tx) => {
+      for (const item of items) {
+        await tx
+          .update(schema.actions)
+          .set({ position: item.position })
+          .where(eq(schema.actions.id, item.id))
+      }
+    })
+  }
+}
+
+export class DrizzleTaskRepository implements TaskRepository {
+  constructor(private readonly db: NodePgDatabase<typeof schema>) {}
+
+  async findByActionIds(actionIds: string[]) {
+    if (actionIds.length === 0) return []
+
+    const rows = await this.db
       .select()
-      .from(schema.columns)
-      .where(eq(schema.columns.boardId, id))
-      .orderBy(asc(schema.columns.position))
+      .from(schema.tasks)
+      .where(inArray(schema.tasks.actionId, actionIds))
+      .orderBy(asc(schema.tasks.position))
 
-    const cardRows =
-      columnRows.length > 0
-        ? await this.db
-            .select()
-            .from(schema.cards)
-            .where(
-              and(...columnRows.map((c) => eq(schema.cards.columnId, c.id))) ||
-                undefined,
-            )
-            .orderBy(asc(schema.cards.position))
-        : []
-
-    return new Board(
-      boardRow.id,
-      boardRow.title,
-      columnRows.map((col) => ({
-        id: col.id,
-        title: col.title,
-        position: col.position,
-        cards: cardRows
-          .filter((card) => card.columnId === col.id)
-          .map((card) => ({
-            id: card.id,
-            title: card.title,
-            description: card.description,
-            position: card.position,
-          })),
-      })),
-      boardRow.createdAt,
-      boardRow.updatedAt,
+    return rows.map(
+      (r) =>
+        new Task(
+          r.id,
+          r.title,
+          r.description,
+          r.position,
+          r.actionId,
+          r.createdAt,
+          r.updatedAt,
+        ),
     )
   }
 
-  async findAll(): Promise<Board[]> {
-    const boardRows = await this.db
+  async findById(id: string) {
+    const [row] = await this.db
       .select()
-      .from(schema.boards)
-      .orderBy(desc(schema.boards.createdAt))
+      .from(schema.tasks)
+      .where(eq(schema.tasks.id, id))
+      .limit(1)
 
-    if (boardRows.length === 0) return []
-
-    const boardIds = boardRows.map((b) => b.id)
-
-    const columnRows = await this.db
-      .select()
-      .from(schema.columns)
-      .where(
-        and(...boardIds.map((bid) => eq(schema.columns.boardId, bid))) ||
-          undefined,
-      )
-      .orderBy(asc(schema.columns.position))
-
-    const cardRows =
-      columnRows.length > 0
-        ? await this.db
-            .select()
-            .from(schema.cards)
-            .where(
-              and(...columnRows.map((c) => eq(schema.cards.columnId, c.id))) ||
-                undefined,
-            )
-            .orderBy(asc(schema.cards.position))
-        : []
-
-    return boardRows.map((boardRow) => {
-      const boardColumns = columnRows.filter((c) => c.boardId === boardRow.id)
-      return new Board(
-        boardRow.id,
-        boardRow.title,
-        boardColumns.map((col) => ({
-          id: col.id,
-          title: col.title,
-          position: col.position,
-          cards: cardRows
-            .filter((card) => card.columnId === col.id)
-            .map((card) => ({
-              id: card.id,
-              title: card.title,
-              description: card.description,
-              position: card.position,
-            })),
-        })),
-        boardRow.createdAt,
-        boardRow.updatedAt,
-      )
-    })
+    if (!row) return null
+    return new Task(
+      row.id,
+      row.title,
+      row.description,
+      row.position,
+      row.actionId,
+      row.createdAt,
+      row.updatedAt,
+    )
   }
 
-  async save(board: Board): Promise<void> {
-    const dto = board.toDTO()
-    const now = new Date()
-
-    await this.db.transaction(async (tx) => {
-      await tx
-        .insert(schema.boards)
-        .values({
-          id: board.id,
-          title: board.title,
-          createdAt: dto.createdAt,
-          updatedAt: now,
-        })
-        .onConflictDoUpdate({
-          target: schema.boards.id,
-          set: { title: board.title, updatedAt: now },
-        })
-
-      const columnPromises = dto.columns.map((col) =>
-        tx
-          .insert(schema.columns)
-          .values({
-            id: col.id,
-            title: col.title,
-            position: col.position,
-            boardId: board.id,
-          })
-          .onConflictDoUpdate({
-            target: schema.columns.id,
-            set: { title: col.title, position: col.position },
-          }),
-      )
-
-      const cardPromises = dto.columns.flatMap((col) =>
-        col.cards.map((card) =>
-          tx
-            .insert(schema.cards)
-            .values({
-              id: card.id,
-              title: card.title,
-              description: card.description,
-              position: card.position,
-              columnId: col.id,
-              createdAt: now,
-              updatedAt: now,
-            })
-            .onConflictDoUpdate({
-              target: schema.cards.id,
-              set: {
-                title: card.title,
-                description: card.description,
-                position: card.position,
-                columnId: col.id,
-                updatedAt: now,
-              },
-            }),
-        ),
-      )
-
-      await Promise.all([...columnPromises, ...cardPromises])
-    })
+  async save(task: Task) {
+    await this.db
+      .insert(schema.tasks)
+      .values({
+        id: task.id,
+        title: task.title,
+        description: task.description,
+        position: task.position,
+        actionId: task.actionId,
+        createdAt: task.createdAt,
+        updatedAt: task.updatedAt,
+      })
+      .onConflictDoUpdate({
+        target: schema.tasks.id,
+        set: {
+          title: task.title,
+          description: task.description,
+          position: task.position,
+          actionId: task.actionId,
+          updatedAt: task.updatedAt,
+        },
+      })
   }
 
-  async delete(id: string): Promise<void> {
-    await this.db.delete(schema.boards).where(eq(schema.boards.id, id))
+  async delete(id: string) {
+    await this.db.delete(schema.tasks).where(eq(schema.tasks.id, id))
+  }
+
+  async updateActionId(taskId: string, actionId: string, position: number) {
+    await this.db
+      .update(schema.tasks)
+      .set({ actionId, position, updatedAt: new Date() })
+      .where(eq(schema.tasks.id, taskId))
   }
 }

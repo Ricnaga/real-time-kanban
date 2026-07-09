@@ -1,29 +1,27 @@
-import { pgTable, uuid, text, integer, timestamp } from 'drizzle-orm/pg-core'
+import {
+  pgTable,
+  uuid,
+  text,
+  integer,
+  boolean,
+  timestamp,
+} from 'drizzle-orm/pg-core'
 
-export const boards = pgTable('boards', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  title: text('title').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
-})
-
-export const columns = pgTable('columns', {
+export const actions = pgTable('actions', {
   id: uuid('id').defaultRandom().primaryKey(),
   title: text('title').notNull(),
   position: integer('position').notNull(),
-  boardId: uuid('board_id')
-    .notNull()
-    .references(() => boards.id, { onDelete: 'cascade' }),
+  isDefault: boolean('is_default').default(false).notNull(),
 })
 
-export const cards = pgTable('cards', {
+export const tasks = pgTable('tasks', {
   id: uuid('id').defaultRandom().primaryKey(),
   title: text('title').notNull(),
   description: text('description'),
   position: integer('position').notNull(),
-  columnId: uuid('column_id')
+  actionId: uuid('action_id')
     .notNull()
-    .references(() => columns.id, { onDelete: 'cascade' }),
+    .references(() => actions.id, { onDelete: 'cascade' }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
