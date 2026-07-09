@@ -40,5 +40,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# drizzle
+apps/server/src/backend/infra/database/drizzle/migrations/
+
 # prisma
 apps/server/src/backend/infra/database/prisma/client/
