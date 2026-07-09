@@ -1,24 +1,25 @@
 export type BoardDTO = {
   id: string
   title: string
-  columns: ColumnDTO[]
+  actions: ActionDTO[]
   createdAt: Date
   updatedAt: Date
 }
 
-export type ColumnDTO = {
+export type ActionDTO = {
   id: string
   title: string
   position: number
-  cards: CardDTO[]
+  isDefault: boolean
+  tasks: TaskDTO[]
 }
 
-export type CardDTO = {
+export type TaskDTO = {
   id: string
   title: string
   description: string | null
   position: number
-  columnId: string
+  actionId: string
   createdAt: Date
   updatedAt: Date
 }
@@ -27,19 +28,50 @@ export type CreateBoardInput = {
   title: string
 }
 
-export type CreateCardInput = {
+export type CreateTaskInput = {
   title: string
   description?: string
-  columnId: string
+  actionId?: string
 }
 
-export type MoveCardInput = {
-  cardId: string
-  targetColumnId: string
+export type UpdateTaskInput = {
+  taskId: string
+  title?: string
+  description?: string
+}
+
+export type MoveTaskInput = {
+  taskId: string
+  targetActionId: string
   position: number
 }
 
+export type CreateActionInput = {
+  title: string
+  position?: number
+}
+
+export type ReorderActionInput = {
+  actionId: string
+  newPosition: number
+}
+
+export type ActionStatsDTO = {
+  actionId: string
+  actionTitle: string
+  taskCount: number
+}
+
 export type BoardEvent = {
-  type: 'board:created' | 'board:updated' | 'card:created' | 'card:moved'
-  payload: BoardDTO | CardDTO
+  type:
+    | 'board:created'
+    | 'board:updated'
+    | 'task:created'
+    | 'task:moved'
+    | 'task:updated'
+    | 'task:deleted'
+    | 'action:created'
+    | 'action:deleted'
+    | 'action:reordered'
+  payload: BoardDTO | ActionDTO | TaskDTO | ActionStatsDTO
 }
