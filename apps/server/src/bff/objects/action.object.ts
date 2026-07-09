@@ -1,26 +1,28 @@
 import { builder } from '../builder'
-import { CardType } from './card.object'
+import { TaskType } from './task.object'
 
-export const ColumnType = builder.objectRef<{
+export const ActionType = builder.objectRef<{
   id: string
   title: string
   position: number
-  cards: Array<{
+  isDefault: boolean
+  tasks: Array<{
     id: string
     title: string
     description: string | null
     position: number
-    columnId: string
+    actionId: string
     createdAt: Date
     updatedAt: Date
   }>
-}>('Column')
+}>('Action')
 
-ColumnType.implement({
+ActionType.implement({
   fields: (t) => ({
     id: t.exposeString('id'),
     title: t.exposeString('title'),
     position: t.exposeInt('position'),
-    cards: t.expose('cards', { type: [CardType] }),
+    isDefault: t.exposeBoolean('isDefault'),
+    tasks: t.expose('tasks', { type: [TaskType] }),
   }),
 })

@@ -1,8 +1,8 @@
 import SchemaBuilder from '@pothos/core'
-import type { BoardController } from '../backend/controllers/board.controller'
+import type { KanbanController } from '../backend/controllers/kanban.controller'
 
 export type Context = {
-  boardController: BoardController
+  kanbanController: KanbanController
   pubSub: {
     subscribe: (topic: string) => AsyncIterable<unknown>
     publish: (topic: string, payload: unknown) => void

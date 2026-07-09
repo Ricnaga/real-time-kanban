@@ -1,10 +1,12 @@
 import './objects/scalars'
-import './objects/card.object'
-import './objects/column.object'
-import './objects/board.object'
-import './queries/board.queries'
-import './mutations/board.mutations'
-import './subscriptions/board.subscriptions'
+import './objects/task.object'
+import './objects/action.object'
+import './objects/statistics.object'
+import './queries/actions.queries'
+import './queries/statistics.queries'
+import './mutations/task.mutations'
+import './mutations/action.mutations'
+import './subscriptions/kanban.subscriptions'
 import { builder } from './builder'
 
 export const schema = builder.toSchema()

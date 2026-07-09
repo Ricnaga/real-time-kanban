@@ -1,22 +1,22 @@
 import { builder } from '../builder'
 
-export const CardType = builder.objectRef<{
+export const TaskType = builder.objectRef<{
   id: string
   title: string
   description: string | null
   position: number
-  columnId: string
+  actionId: string
   createdAt: Date
   updatedAt: Date
-}>('Card')
+}>('Task')
 
-CardType.implement({
+TaskType.implement({
   fields: (t) => ({
     id: t.exposeString('id'),
     title: t.exposeString('title'),
     description: t.exposeString('description', { nullable: true }),
     position: t.exposeInt('position'),
-    columnId: t.exposeString('columnId'),
+    actionId: t.exposeString('actionId'),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
     updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
   }),
