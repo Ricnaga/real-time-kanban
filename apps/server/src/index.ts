@@ -10,6 +10,8 @@ import { MoveCardUseCase } from './backend/domain/use-cases/move-card.use-case'
 import { BoardController } from './backend/controllers/board.controller'
 import { schema as gqlSchema } from './bff/schema'
 import type { Context } from './bff/builder'
+import { usePrometheus } from '@graphql-yoga/plugin-prometheus'
+import { useHive } from '@graphql-hive/yoga'
 
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL })
 const db = drizzle(pool, { schema })
@@ -33,6 +35,9 @@ const boardController = new BoardController(
   moveCardUseCase,
 )
 
+const hiveToken = process.env.HIVE_TOKEN
+const hiveTarget = process.env.HIVE_TARGET
+
 const yoga = createYoga<Context>({
   schema: gqlSchema,
   context: () => ({
@@ -41,6 +46,20 @@ const yoga = createYoga<Context>({
   }),
   graphqlEndpoint: '/graphql',
   fetchAPI: { Response },
+  plugins: [
+    usePrometheus({
+      endpoint: '/metrics',
+    }),
+    ...(hiveToken && hiveTarget
+      ? [
+          useHive({
+            enabled: true,
+            token: hiveToken,
+            usage: { target: hiveTarget },
+          }),
+        ]
+      : []),
+  ],
 })
 
 const server = createServer(yoga)
