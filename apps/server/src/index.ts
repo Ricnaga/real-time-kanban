@@ -24,9 +24,9 @@ import { schema as gqlSchema } from './bff/pothos/schema'
 import { loadEnvironment } from './config'
 
 async function main() {
-  const env = loadEnvironment()
+  const { databaseUrl, port, hiveToken, hiveTarget } = loadEnvironment()
 
-  const pool = new pg.Pool({ connectionString: env.databaseUrl })
+  const pool = new pg.Pool({ connectionString: databaseUrl })
   const db = drizzle(pool, { schema })
 
   const pubSub = createPubSub()
@@ -84,8 +84,6 @@ async function main() {
 
   const adapters = createAdapters(kanbanController)
 
-  const { hiveToken, hiveTarget } = env
-
   const yoga = createYoga<Context>({
     schema: gqlSchema,
     context: () => ({
@@ -112,8 +110,8 @@ async function main() {
 
   const server = createServer(yoga)
 
-  server.listen(env.port, () => {
-    console.log(`Server running on http://localhost:${env.port}/graphql`)
+  server.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}/graphql`)
   })
 }
 
