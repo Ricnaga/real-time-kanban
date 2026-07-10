@@ -87,6 +87,9 @@ importers:
       '@pothos/core':
         specifier: ^4.5.2
         version: 4.13.0(graphql@16.14.2)
+      consola:
+        specifier: ^3.4.2
+        version: 3.4.2
       drizzle-orm:
         specifier: ^0.42.0
         version: 0.42.0(@opentelemetry/api@1.9.1)(@types/pg@8.20.0)(gel@2.2.0)(pg@8.22.0)(postgres@3.4.9)
@@ -1335,6 +1338,10 @@ packages:
   cluster-key-slot@1.1.1:
     resolution: {integrity: sha512-rwHwUfXL40Chm1r08yrhU3qpUvdVlgkKNeyeGPOxnW8/SyVDvgRaed/Uz54AqWNaTCAThlj6QAs3TZcKI0xDEw==}
     engines: {node: '>=0.10.0'}
+
+  consola@3.4.2:
+    resolution: {integrity: sha512-5IKcdX0nnYavi6G7TtOhwkYzyjfJlatbjMjuLSfE2kYT5pMDOilZ4OvMhi637CcDICTmz3wARPoyhqyX1Y+XvA==}
+    engines: {node: ^14.18.0 || >=16.10.0}
 
   cookie@1.1.1:
     resolution: {integrity: sha512-ei8Aos7ja0weRpFzJnEA9UHJ/7XQmqglbRwnf2ATjcB9Wq874VKH9kfjjirM6UhU2/E5fFYadylyhFldcqSidQ==}
@@ -2931,6 +2938,8 @@ snapshots:
   client-only@0.0.1: {}
 
   cluster-key-slot@1.1.1: {}
+
+  consola@3.4.2: {}
 
   cookie@1.1.1: {}
 
