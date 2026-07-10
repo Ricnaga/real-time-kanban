@@ -24,7 +24,8 @@
     "pg": "^8.13.0",
     "postgres": "^3.4.5",
     "prom-client": "^15",
-    "reflect-metadata": "^0.2.2"
+    "reflect-metadata": "^0.2.2",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^20",
