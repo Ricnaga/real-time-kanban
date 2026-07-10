@@ -1,14 +1,20 @@
-import { createServer } from 'node:http'
+import fastify from 'fastify'
 import type { YogaServerInstance } from 'graphql-yoga'
 import { loadEnvironment } from './config'
-import { logger } from './utils/logs'
+import { logServerOnline } from './utils/server.logs'
 
 export function initServer(yoga: YogaServerInstance<{}, {}>) {
   const { PORT } = loadEnvironment()
 
-  const server = createServer(yoga)
+  const app = fastify({ logger: false })
 
-  server.listen(PORT, () => {
-    logger.success(`[GRAPHQL SERVER] http://localhost:${PORT}/graphql`)
+  app.route({
+    url: yoga.graphqlEndpoint,
+    method: ['GET', 'POST', 'OPTIONS'],
+    handler: (req, reply) => yoga.handleNodeRequestAndResponse(req, reply),
+  })
+
+  app.listen({ port: PORT, host: '0.0.0.0' }, () => {
+    logServerOnline(PORT)
   })
 }
