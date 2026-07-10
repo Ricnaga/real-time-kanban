@@ -21,9 +21,12 @@ import * as schema from './backend/infra/database/drizzle/schema'
 import { createAdapters } from './bff/adapters'
 import type { Context } from './bff/pothos/builder'
 import { schema as gqlSchema } from './bff/pothos/schema'
+import { loadEnvironment } from './config'
 
 async function main() {
-  const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL })
+  const env = loadEnvironment()
+
+  const pool = new pg.Pool({ connectionString: env.databaseUrl })
   const db = drizzle(pool, { schema })
 
   const pubSub = createPubSub()
@@ -81,8 +84,7 @@ async function main() {
 
   const adapters = createAdapters(kanbanController)
 
-  const hiveToken = process.env.HIVE_TOKEN
-  const hiveTarget = process.env.HIVE_TARGET
+  const { hiveToken, hiveTarget } = env
 
   const yoga = createYoga<Context>({
     schema: gqlSchema,
@@ -110,10 +112,8 @@ async function main() {
 
   const server = createServer(yoga)
 
-  const PORT = Number(process.env.PORT) || 4000
-
-  server.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}/graphql`)
+  server.listen(env.port, () => {
+    console.log(`Server running on http://localhost:${env.port}/graphql`)
   })
 }
 
