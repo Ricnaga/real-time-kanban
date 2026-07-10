@@ -24,9 +24,9 @@ import { schema as gqlSchema } from './bff/pothos/schema'
 import { loadEnvironment } from './config'
 
 async function main() {
-  const { databaseUrl, port, hiveToken, hiveTarget } = loadEnvironment()
+  const { DATABASE_URL, PORT, HIVE_TOKEN, HIVE_TARGET } = loadEnvironment()
 
-  const pool = new pg.Pool({ connectionString: databaseUrl })
+  const pool = new pg.Pool({ connectionString: DATABASE_URL })
   const db = drizzle(pool, { schema })
 
   const pubSub = createPubSub()
@@ -96,12 +96,12 @@ async function main() {
       usePrometheus({
         endpoint: '/metrics',
       }),
-      ...(hiveToken && hiveTarget
+      ...(HIVE_TOKEN && HIVE_TARGET
         ? [
             useHive({
               enabled: true,
-              token: hiveToken,
-              usage: { target: hiveTarget },
+              token: HIVE_TOKEN,
+              usage: { target: HIVE_TARGET },
             }),
           ]
         : []),
@@ -110,8 +110,8 @@ async function main() {
 
   const server = createServer(yoga)
 
-  server.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}/graphql`)
+  server.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}/graphql`)
   })
 }
 
