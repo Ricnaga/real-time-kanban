@@ -9,6 +9,6 @@ export function initServer(yoga: YogaServerInstance<{}, {}>) {
   const server = createServer(yoga)
 
   server.listen(PORT, () => {
-    logger.success(`Server running on http://localhost:${PORT}/graphql`)
+    logger.success(`[GRAPHQL SERVER] http://localhost:${PORT}/graphql`)
   })
 }

@@ -1,16 +1,11 @@
-import { createYoga } from 'graphql-yoga'
-import { plugins } from './bff/plugins'
-import { schema } from './bff/pothos/schema'
-import { initServer } from './server'
+import { createGraphQLHandler } from './bff/graphql'
+import { initServer } from './main'
+import { initBackend } from './backend/server'
 
 async function main() {
-  const yoga = createYoga({
-    schema,
-    graphqlEndpoint: '/graphql',
-    fetchAPI: { Response },
-    plugins,
-  })
+  await initBackend()
 
+  const yoga = createGraphQLHandler()
   initServer(yoga)
 }
 
