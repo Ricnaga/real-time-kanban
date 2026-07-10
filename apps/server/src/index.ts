@@ -1,9 +1,9 @@
+import { initInstance } from './backend/instance'
 import { createGraphQLHandler } from './bff/graphql'
-import { initServer } from './main'
-import { initBackend } from './backend/server'
+import { initServer } from './server'
 
 async function main() {
-  await initBackend()
+  await initInstance()
 
   const yoga = createGraphQLHandler()
   initServer(yoga)
