@@ -1,9 +1,9 @@
 import { eq } from 'drizzle-orm'
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres'
 import * as schema from '../../../shared/infra/database/drizzle/drizzle.schema'
-import type { IActionRepository } from '../domain/repositories/action-repository.interface'
-import { Action, Step } from '../domain/entities/action'
-import { ActionId } from '../domain/value-objects/action-id'
+import type { IActionRepository } from '../repositories/action-repository.interface'
+import { Action, Step } from '../entities/action'
+import { ActionId } from '../value-objects/action-id'
 
 export class DrizzleActionRepository implements IActionRepository {
   constructor(private readonly db: NodePgDatabase<typeof schema>) {}

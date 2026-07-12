@@ -1,6 +1,6 @@
 import { injectable, inject } from 'inversify'
 import { TYPES } from '@/backend/shared/container/di/types'
-import type { IActionRepository } from '../domain/repositories/action-repository.interface'
+import type { IActionRepository } from '../repositories/action-repository.interface'
 
 @injectable()
 export class ListActionsUseCase {

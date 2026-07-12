@@ -1,7 +1,7 @@
 import { injectable, inject } from 'inversify'
 import { TYPES } from '@/backend/shared/container/di/types'
-import type { IActionRepository } from '../domain/repositories/action-repository.interface'
-import { ActionId } from '../domain/value-objects/action-id'
+import type { IActionRepository } from '../repositories/action-repository.interface'
+import { ActionId } from '../value-objects/action-id'
 
 @injectable()
 export class DeleteActionUseCase {

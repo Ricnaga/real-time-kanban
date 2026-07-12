@@ -1,7 +1,7 @@
 import { injectable, inject } from 'inversify'
 import { TYPES } from '@/backend/shared/container/di/types'
-import type { IActionRepository } from '../domain/repositories/action-repository.interface'
-import { Action, Step } from '../domain/entities/action'
+import type { IActionRepository } from '../repositories/action-repository.interface'
+import { Action, Step } from '../entities/action'
 
 @injectable()
 export class CreateActionUseCase {
