@@ -87,6 +87,9 @@ importers:
       '@pothos/core':
         specifier: ^4.5.2
         version: 4.13.0(graphql@16.14.2)
+      '@pothos/plugin-relay':
+        specifier: ^4.7.1
+        version: 4.7.1(@pothos/core@4.13.0(graphql@16.14.2))(graphql@16.14.2)
       consola:
         specifier: ^3.4.2
         version: 3.4.2
@@ -1132,6 +1135,12 @@ packages:
   '@pothos/core@4.13.0':
     resolution: {integrity: sha512-bIaVdLTkwPkkmIn0Ji13vsc9Zy0mEi++a9iMFIRVa88l0G7JuFJrJX5qGPo1GGu4drvRW4SAr2aDm2V5KcYj4A==}
     peerDependencies:
+      graphql: ^16.10.0 || ^17.0.0
+
+  '@pothos/plugin-relay@4.7.1':
+    resolution: {integrity: sha512-aj0xgdcvktx0k6iOvtkfJvb6FYdoWnlQkDMumr1WQm7uTXsJOASYQndytfnS0/0wsctCF/UTTK6Y53+F0UIeMw==}
+    peerDependencies:
+      '@pothos/core': '*'
       graphql: ^16.10.0 || ^17.0.0
 
   '@repeaterjs/repeater@3.1.0':
@@ -2759,6 +2768,11 @@ snapshots:
 
   '@pothos/core@4.13.0(graphql@16.14.2)':
     dependencies:
+      graphql: 16.14.2
+
+  '@pothos/plugin-relay@4.7.1(@pothos/core@4.13.0(graphql@16.14.2))(graphql@16.14.2)':
+    dependencies:
+      '@pothos/core': 4.13.0(graphql@16.14.2)
       graphql: 16.14.2
 
   '@repeaterjs/repeater@3.1.0': {}
