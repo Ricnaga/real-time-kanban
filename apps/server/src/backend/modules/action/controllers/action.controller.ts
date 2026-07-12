@@ -1,5 +1,6 @@
 import { injectable, inject } from 'inversify'
-import type { Step } from '../domain/entities/action'
+import type { CreateActionDTO } from '../dto/create.dto'
+import type { UpdateActionDTO } from '../dto/update.dto'
 import { CreateActionUseCase } from '../use-cases/create-action.use-case'
 import { FindActionByIdUseCase } from '../use-cases/find-action-by-id.use-case'
 import { ListActionsUseCase } from '../use-cases/list-actions.use-case'
@@ -21,8 +22,8 @@ export class ActionController {
     private readonly deleteUseCase: DeleteActionUseCase,
   ) {}
 
-  async create(title: string, step: Step) {
-    return this.createUseCase.execute(title, step)
+  async create(dto: CreateActionDTO) {
+    return this.createUseCase.execute(dto.title, dto.step)
   }
 
   async findAll() {
@@ -33,8 +34,11 @@ export class ActionController {
     return this.findByIdUseCase.execute(actionId)
   }
 
-  async update(actionId: string, data: { title?: string; step?: Step }) {
-    return this.updateUseCase.execute(actionId, data)
+  async update(dto: UpdateActionDTO) {
+    return this.updateUseCase.execute(dto.id, {
+      title: dto.title,
+      step: dto.step,
+    })
   }
 
   async delete(actionId: string) {
