@@ -1,8 +1,14 @@
+import { injectable, inject } from 'inversify'
+import { TYPES } from '@/backend/shared/container/di/types'
 import type { IActionRepository } from '../domain/repositories/action-repository.interface'
 import { ActionId } from '../domain/value-objects/action-id'
 
+@injectable()
 export class DeleteActionUseCase {
-  constructor(private readonly actionRepo: IActionRepository) {}
+  constructor(
+    @inject(TYPES.Repositories.Action)
+    private readonly actionRepo: IActionRepository,
+  ) {}
 
   async execute(actionId: string) {
     const id = new ActionId(actionId)
