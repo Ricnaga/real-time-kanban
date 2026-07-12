@@ -1,0 +1,1 @@
+export { createActionAdapter } from './action'
