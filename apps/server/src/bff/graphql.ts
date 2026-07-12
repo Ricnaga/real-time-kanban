@@ -1,6 +1,7 @@
 import { createYoga } from 'graphql-yoga'
 import { plugins } from './plugins'
 import { schema } from './pothos/schema'
+import { context } from './context'
 
 export function createGraphQLHandler() {
   return createYoga({
@@ -8,5 +9,6 @@ export function createGraphQLHandler() {
     graphqlEndpoint: '/graphql',
     fetchAPI: { Response },
     plugins,
+    context,
   })
 }
