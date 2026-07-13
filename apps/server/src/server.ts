@@ -1,7 +1,7 @@
 import fastify from 'fastify';
 import type { YogaServerInstance } from 'graphql-yoga';
 import { loadEnvironment } from './config';
-import { logServerOnline } from './utils/server.logs';
+import { initStartupLogs } from './utils/server.logs';
 
 export function initServer(yoga: YogaServerInstance<{}, {}>) {
   const { PORT } = loadEnvironment();
@@ -15,6 +15,6 @@ export function initServer(yoga: YogaServerInstance<{}, {}>) {
   });
 
   app.listen({ port: PORT, host: '0.0.0.0' }, () => {
-    logServerOnline(PORT);
+    initStartupLogs(PORT);
   });
 }
