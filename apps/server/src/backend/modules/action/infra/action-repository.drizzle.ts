@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import * as schema from '../../../shared/infra/database/drizzle/drizzle.schema';
 import type { IActionRepository } from '../repositories/action-repository.interface';
-import { Action, Step } from '../entities/action';
+import { Action } from '../entities/action';
 
 export class DrizzleActionRepository implements IActionRepository {
   constructor(private readonly db: NodePgDatabase<typeof schema>) {}
@@ -22,7 +22,7 @@ export class DrizzleActionRepository implements IActionRepository {
         new Action({
           id: r.id,
           title: r.title,
-          step: r.step as Step,
+          step: r.step,
         }),
     );
   }
@@ -38,7 +38,7 @@ export class DrizzleActionRepository implements IActionRepository {
     return new Action({
       id: row.id,
       title: row.title,
-      step: row.step as Step,
+      step: row.step,
     });
   }
 
@@ -53,7 +53,7 @@ export class DrizzleActionRepository implements IActionRepository {
     return new Action({
       id: row.id,
       title: row.title,
-      step: row.step as Step,
+      step: row.step,
     });
   }
 

@@ -30,7 +30,7 @@ export class ActionConnector {
   async create(data: { title: string; step: string }): Promise<ActionModel> {
     const action = await this.controller.create({
       title: data.title,
-      step: data.step as never,
+      step: data.step,
     });
     return {
       id: action.id.value,
@@ -47,7 +47,7 @@ export class ActionConnector {
     const action = await this.controller.update({
       id: data.id,
       title: data.title,
-      step: data.step as never,
+      step: data.step,
     });
     return {
       id: action.id.value,

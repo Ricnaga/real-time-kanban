@@ -1,7 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '@/backend/shared/container/di/types';
 import type { IActionRepository } from '../repositories/action-repository.interface';
-import { Action, Step } from '../entities/action';
+import { Action } from '../entities/action';
 
 @injectable()
 export class CreateActionUseCase {
@@ -10,7 +10,7 @@ export class CreateActionUseCase {
     private readonly actionRepo: IActionRepository,
   ) {}
 
-  async execute(title: string, step: Step) {
+  async execute(title: string, step: string) {
     const action = new Action({ title, step });
     await this.actionRepo.create(action);
     return action;

@@ -1,7 +1,6 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '@/backend/shared/container/di/types';
 import type { IActionRepository } from '../repositories/action-repository.interface';
-import type { Step } from '../entities/action';
 
 @injectable()
 export class UpdateActionUseCase {
@@ -10,7 +9,7 @@ export class UpdateActionUseCase {
     private readonly actionRepo: IActionRepository,
   ) {}
 
-  async execute(actionId: string, data: { title?: string; step?: Step }) {
+  async execute(actionId: string, data: { title?: string; step?: string }) {
     const action = await this.actionRepo.findById(actionId);
     if (!action) throw new Error('Action not found');
 
