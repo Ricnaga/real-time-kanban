@@ -45,16 +45,21 @@ export function initStartupLogs(port: number, status: StatusLine[]) {
   const label = (name: string) => colors.yellow(`[${name}]`);
   const url = colors.yellow(`http://localhost:${port}/graphql`);
 
+  const allLabels = [...status.map((s) => s.label), 'GRAPHQL', 'SERVER'];
+  const maxLabelLen = Math.max(...allLabels.map((l) => l.length));
+
   const statusLines = status.map((s) =>
-    boxLine(`${label(s.label)}  ${statusBadge(s.status)}`),
+    boxLine(`${pad(label(s.label), maxLabelLen + 3)} ${statusBadge(s.status)}`),
   );
 
   const lines = [
     '',
     `┌${'─'.repeat(INNER_WIDTH + 2)}┐`,
     ...statusLines,
-    boxLine(`${label('GRAPHQL')}  ${statusBadge('online')}`),
-    boxLine(`${label('SERVER')}   ● ${url}`),
+    boxLine(
+      `${pad(label('GRAPHQL'), maxLabelLen + 3)} ${statusBadge('online')}`,
+    ),
+    boxLine(`${pad(label('SERVER'), maxLabelLen + 3)} ● ${url}`),
     `└${'─'.repeat(INNER_WIDTH + 2)}┘`,
   ];
 
