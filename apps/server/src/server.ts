@@ -3,8 +3,12 @@ import type { YogaServerInstance } from 'graphql-yoga';
 import type { Context } from './bff/context';
 import { loadEnvironment } from './config';
 import { initStartupLogs } from './utils/server.logs';
+import type { StatusLine } from './utils/server.logs';
 
-export function initServer(yoga: YogaServerInstance<{}, Context>) {
+export function initServer(
+  yoga: YogaServerInstance<{}, Context>,
+  status: StatusLine[],
+) {
   const { PORT } = loadEnvironment();
 
   const app = fastify({ logger: false });
@@ -16,6 +20,6 @@ export function initServer(yoga: YogaServerInstance<{}, Context>) {
   });
 
   app.listen({ port: PORT, host: '0.0.0.0' }, () => {
-    initStartupLogs(PORT);
+    initStartupLogs(PORT, status);
   });
 }

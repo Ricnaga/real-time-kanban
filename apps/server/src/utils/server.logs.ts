@@ -1,6 +1,13 @@
 import { colors } from 'consola/utils';
 import { logger } from './logs';
 
+export type Status = 'online' | 'offline' | 'warning';
+
+export type StatusLine = {
+  label: string;
+  status: Status;
+};
+
 const INNER_WIDTH = 52;
 
 const ANSI_REGEX = new RegExp(`[${String.fromCharCode(27)}\\[[0-9;]*m`, 'g');
@@ -18,18 +25,36 @@ function boxLine(content: string): string {
   return `│ ${pad(content, INNER_WIDTH + 1)}│`;
 }
 
-export function initStartupLogs(port: number) {
+function statusBadge(status: Status): string {
+  const dot = {
+    online: colors.green('●'),
+    offline: colors.red('●'),
+    warning: colors.yellow('●'),
+  }[status];
+
+  const badge = {
+    online: colors.bgGreen(colors.bold(colors.green(' ONLINE  '))),
+    offline: colors.bgRed(colors.bold(colors.red(' OFFLINE '))),
+    warning: colors.bgYellow(colors.bold(colors.yellow(' WARNING '))),
+  }[status];
+
+  return `${dot} ${badge}`;
+}
+
+export function initStartupLogs(port: number, status: StatusLine[]) {
   const label = (name: string) => colors.yellow(`[${name}]`);
-  const online = colors.bgGreen(colors.bold(colors.green(' ONLINE ')));
-  const dot = colors.green('●');
   const url = colors.yellow(`http://localhost:${port}/graphql`);
+
+  const statusLines = status.map((s) =>
+    boxLine(`${label(s.label)}  ${statusBadge(s.status)}`),
+  );
 
   const lines = [
     '',
     `┌${'─'.repeat(INNER_WIDTH + 2)}┐`,
-    boxLine(`${label('BACKEND')}  ${dot} ${online}`),
-    boxLine(`${label('GRAPHQL')}  ${dot} ${online}`),
-    boxLine(`${label('SERVER')}   ${dot} ${url}`),
+    ...statusLines,
+    boxLine(`${label('GRAPHQL')}  ${statusBadge('online')}`),
+    boxLine(`${label('SERVER')}   ● ${url}`),
     `└${'─'.repeat(INNER_WIDTH + 2)}┘`,
   ];
 

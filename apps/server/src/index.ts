@@ -3,10 +3,10 @@ import { createGraphQLHandler } from './bff/graphql';
 import { initServer } from './server';
 
 async function main() {
-  await initInstance();
+  const status = await initInstance();
 
   const yoga = createGraphQLHandler();
-  initServer(yoga);
+  initServer(yoga, status);
 }
 
 main();
