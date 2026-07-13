@@ -25,6 +25,7 @@ export function initStartupLogs(port: number) {
   const url = colors.yellow(`http://localhost:${port}/graphql`);
 
   const lines = [
+    '',
     `┌${'─'.repeat(INNER_WIDTH + 2)}┐`,
     boxLine(`${label('BACKEND')}  ${dot} ${online}`),
     boxLine(`${label('GRAPHQL')}  ${dot} ${online}`),
