@@ -1,9 +1,10 @@
 import fastify from 'fastify';
 import type { YogaServerInstance } from 'graphql-yoga';
+import type { Context } from './bff/context';
 import { loadEnvironment } from './config';
 import { initStartupLogs } from './utils/server.logs';
 
-export function initServer(yoga: YogaServerInstance<{}, {}>) {
+export function initServer(yoga: YogaServerInstance<{}, Context>) {
   const { PORT } = loadEnvironment();
 
   const app = fastify({ logger: false });
