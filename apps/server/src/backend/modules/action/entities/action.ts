@@ -1,4 +1,3 @@
-import { v4 as uuid } from 'uuid';
 import { ActionId } from '../value-objects/action-id';
 
 export enum Step {
@@ -15,7 +14,7 @@ export interface IAction {
   step: Step;
 }
 
-export type IActionCreate = Omit<IAction, 'id'> & { id?: ActionId };
+export type IActionCreate = Omit<IAction, 'id'> & { id?: string };
 
 export class Action implements IAction {
   public readonly id: ActionId;
@@ -23,7 +22,7 @@ export class Action implements IAction {
   public step: Step;
 
   constructor(data: IActionCreate) {
-    this.id = data.id ?? new ActionId(uuid());
+    this.id = new ActionId(data.id);
     this.title = data.title;
     this.step = data.step;
   }

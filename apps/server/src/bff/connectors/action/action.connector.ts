@@ -1,6 +1,6 @@
 import { ActionController } from '@/backend/modules/action/controllers/action.controller';
 import container from '@/backend/shared/container';
-import { ActionModel } from '@/bff/domain';
+import { ActionModel } from './action.model';
 
 export class ActionConnector {
   private readonly controller: ActionController;
@@ -11,12 +11,20 @@ export class ActionConnector {
 
   async findAll(): Promise<ActionModel[]> {
     const actions = await this.controller.findAll();
-    return actions;
+    return actions.map((a) => ({
+      id: a.id.value,
+      title: a.title,
+      step: a.step,
+    }));
   }
 
   async findById(id: string): Promise<ActionModel> {
     const action = await this.controller.findById(id);
-    return action;
+    return {
+      id: action.id.value,
+      title: action.title,
+      step: action.step,
+    };
   }
 
   async create(data: { title: string; step: string }): Promise<ActionModel> {
@@ -24,7 +32,11 @@ export class ActionConnector {
       title: data.title,
       step: data.step as never,
     });
-    return action;
+    return {
+      id: action.id.value,
+      title: action.title,
+      step: action.step,
+    };
   }
 
   async update(data: {
@@ -37,7 +49,11 @@ export class ActionConnector {
       title: data.title,
       step: data.step as never,
     });
-    return action;
+    return {
+      id: action.id.value,
+      title: action.title,
+      step: action.step,
+    };
   }
 
   async delete(id: string): Promise<void> {

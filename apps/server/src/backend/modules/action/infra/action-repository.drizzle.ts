@@ -3,7 +3,6 @@ import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import * as schema from '../../../shared/infra/database/drizzle/drizzle.schema';
 import type { IActionRepository } from '../repositories/action-repository.interface';
 import { Action, Step } from '../entities/action';
-import { ActionId } from '../value-objects/action-id';
 
 export class DrizzleActionRepository implements IActionRepository {
   constructor(private readonly db: NodePgDatabase<typeof schema>) {}
@@ -21,23 +20,23 @@ export class DrizzleActionRepository implements IActionRepository {
     return rows.map(
       (r) =>
         new Action({
-          id: new ActionId(r.id),
+          id: r.id,
           title: r.title,
           step: r.step as Step,
         }),
     );
   }
 
-  async findById(id: ActionId) {
+  async findById(id: string) {
     const [row] = await this.db
       .select()
       .from(schema.actions)
-      .where(eq(schema.actions.id, id.value))
+      .where(eq(schema.actions.id, id))
       .limit(1);
 
     if (!row) return null;
     return new Action({
-      id: new ActionId(row.id),
+      id: row.id,
       title: row.title,
       step: row.step as Step,
     });
@@ -52,7 +51,7 @@ export class DrizzleActionRepository implements IActionRepository {
 
     if (!row) return null;
     return new Action({
-      id: new ActionId(row.id),
+      id: row.id,
       title: row.title,
       step: row.step as Step,
     });
@@ -65,7 +64,7 @@ export class DrizzleActionRepository implements IActionRepository {
       .where(eq(schema.actions.id, action.id.value));
   }
 
-  async delete(id: ActionId) {
-    await this.db.delete(schema.actions).where(eq(schema.actions.id, id.value));
+  async delete(id: string) {
+    await this.db.delete(schema.actions).where(eq(schema.actions.id, id));
   }
 }

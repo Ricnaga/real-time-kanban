@@ -1,7 +1,6 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '@/backend/shared/container/di/types';
 import type { IActionRepository } from '../repositories/action-repository.interface';
-import { ActionId } from '../value-objects/action-id';
 import type { Step } from '../entities/action';
 
 @injectable()
@@ -12,8 +11,7 @@ export class UpdateActionUseCase {
   ) {}
 
   async execute(actionId: string, data: { title?: string; step?: Step }) {
-    const id = new ActionId(actionId);
-    const action = await this.actionRepo.findById(id);
+    const action = await this.actionRepo.findById(actionId);
     if (!action) throw new Error('Action not found');
 
     if (data.title !== undefined) action.title = data.title;
