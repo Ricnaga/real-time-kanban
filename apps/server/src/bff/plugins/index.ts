@@ -2,6 +2,7 @@ import { useHive } from '@graphql-hive/yoga';
 import { usePrometheus } from '@graphql-yoga/plugin-prometheus';
 import type { Plugin } from 'graphql-yoga';
 import { loadEnvironment } from '@/config';
+import { maskError } from './use-error-handling';
 
 function createPlugins(): Plugin<{}>[] {
   const { HIVE_TOKEN, HIVE_TARGET } = loadEnvironment();
@@ -21,3 +22,4 @@ function createPlugins(): Plugin<{}>[] {
 }
 
 export const plugins = createPlugins();
+export { maskError };
