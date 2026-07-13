@@ -6,9 +6,8 @@ export type Status = 'online' | 'offline' | 'warning';
 export type StatusLine = {
   label: string;
   status: Status;
+  url?: string;
 };
-
-const INNER_WIDTH = 52;
 
 const ANSI_REGEX = new RegExp(`[${String.fromCharCode(27)}\\[[0-9;]*m`, 'g');
 
@@ -21,16 +20,16 @@ function pad(text: string, width: number): string {
   return text + ' '.repeat(Math.max(0, diff));
 }
 
-function boxLine(content: string): string {
-  return `│ ${pad(content, INNER_WIDTH + 1)}│`;
-}
-
-function statusBadge(status: Status): string {
+function statusBadge(status: Status, url?: string): string {
   const dot = {
     online: colors.green('●'),
     offline: colors.red('●'),
     warning: colors.yellow('●'),
   }[status];
+
+  if (status === 'online' && url) {
+    return `${dot} ${colors.yellow(url)}`;
+  }
 
   const badge = {
     online: colors.bgGreen(colors.bold(colors.green(' ONLINE  '))),
@@ -50,16 +49,23 @@ export function initStartupLogs(port: number, status: StatusLine[]) {
     'SERVER'.length,
   );
 
-  const serviceLines = status.map((s) =>
-    boxLine(`${pad(label(s.label), maxLabelLen + 3)} ${statusBadge(s.status)}`),
-  );
+  const lineContents = [
+    ...status.map(
+      (s) =>
+        `${pad(label(s.label), maxLabelLen + 3)} ${statusBadge(s.status, s.url)}`,
+    ),
+    `${pad(label('SERVER'), maxLabelLen + 3)} ● ${url}`,
+  ];
+
+  const innerWidth = Math.max(...lineContents.map(visibleLength));
+
+  const boxLine = (content: string) => `  ${content}`;
 
   const lines = [
     '',
-    `┌${'─'.repeat(INNER_WIDTH + 2)}┐`,
-    ...serviceLines,
-    boxLine(`${pad(label('SERVER'), maxLabelLen + 3)} ● ${url}`),
-    `└${'─'.repeat(INNER_WIDTH + 2)}┘`,
+    `┌${'─'.repeat(innerWidth + 2)}┐`,
+    ...lineContents.map(boxLine),
+    `└${'─'.repeat(innerWidth + 2)}┘`,
   ];
 
   logger.info(lines.join('\n'));

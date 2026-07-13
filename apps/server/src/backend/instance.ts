@@ -70,7 +70,15 @@ export async function initInstance(): Promise<StatusLine[]> {
   return [
     { label: 'DATABASE', status: dbStatus },
     { label: 'REDIS', status: redisStatus },
-    { label: 'PROMETHEUS', status: prometheusStatus },
-    { label: 'GRAFANA', status: grafanaStatus },
+    {
+      label: 'PROMETHEUS',
+      status: prometheusStatus,
+      url: prometheusStatus === 'online' ? PROMETHEUS_URL : undefined,
+    },
+    {
+      label: 'GRAFANA',
+      status: grafanaStatus,
+      url: grafanaStatus === 'online' ? GRAFANA_URL : undefined,
+    },
   ];
 }
