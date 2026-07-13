@@ -57,8 +57,8 @@ export async function initInstance(): Promise<StatusLine[]> {
   const diStatus = validateDI();
 
   return [
+    { label: 'BACKEND', status: diStatus },
     { label: 'DATABASE', status: dbStatus },
     { label: 'REDIS', status: redisStatus },
-    { label: 'BACKEND', status: diStatus },
   ];
 }

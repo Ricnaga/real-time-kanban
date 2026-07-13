@@ -48,18 +48,23 @@ export function initStartupLogs(port: number, status: StatusLine[]) {
   const allLabels = [...status.map((s) => s.label), 'GRAPHQL', 'SERVER'];
   const maxLabelLen = Math.max(...allLabels.map((l) => l.length));
 
-  const statusLines = status.map((s) =>
-    boxLine(`${pad(label(s.label), maxLabelLen + 3)} ${statusBadge(s.status)}`),
+  const services = status.filter((s) => s.label !== 'BACKEND');
+
+  const serviceLines = services.map((s) =>
+    boxLine(
+      `  ${pad(label(s.label), maxLabelLen + 3)} ${statusBadge(s.status)}`,
+    ),
   );
 
   const lines = [
     '',
     `┌${'─'.repeat(INNER_WIDTH + 2)}┐`,
-    ...statusLines,
+    boxLine(pad(label('BACKEND'), maxLabelLen + 3)),
+    ...serviceLines,
     boxLine(
-      `${pad(label('GRAPHQL'), maxLabelLen + 3)} ${statusBadge('online')}`,
+      `${pad(label('GRAPHQL'), maxLabelLen + 3)}   ${statusBadge('online')}`,
     ),
-    boxLine(`${pad(label('SERVER'), maxLabelLen + 3)} ● ${url}`),
+    boxLine(`${pad(label('SERVER'), maxLabelLen + 3)}   ● ${url}`),
     `└${'─'.repeat(INNER_WIDTH + 2)}┘`,
   ];
 
