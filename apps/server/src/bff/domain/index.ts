@@ -1,2 +1,2 @@
-export { ActionDomain } from './action'
-export type { ActionModel } from './action'
+export { ActionDomain } from './action';
+export type { ActionModel } from './action';
