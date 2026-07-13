@@ -15,7 +15,7 @@ function pad(text: string, width: number): string {
 }
 
 function boxLine(content: string): string {
-  return `│ ${pad(content, INNER_WIDTH)}│`;
+  return `│ ${pad(content, INNER_WIDTH + 1)}│`;
 }
 
 export function initStartupLogs(port: number) {
