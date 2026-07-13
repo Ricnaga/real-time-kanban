@@ -1,10 +1,17 @@
 import { colors } from 'consola/utils';
 import { logger } from './logs';
 
-const INNER_WIDTH = 44;
+const INNER_WIDTH = 52;
+
+const ANSI_REGEX = new RegExp(`[${String.fromCharCode(27)}\\[[0-9;]*m`, 'g');
+
+function visibleLength(text: string): number {
+  return text.replace(ANSI_REGEX, '').length;
+}
 
 function pad(text: string, width: number): string {
-  return text + ' '.repeat(Math.max(0, width - text.length));
+  const diff = width - visibleLength(text);
+  return text + ' '.repeat(Math.max(0, diff));
 }
 
 function boxLine(content: string): string {
