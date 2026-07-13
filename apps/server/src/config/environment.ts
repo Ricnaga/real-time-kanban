@@ -6,6 +6,8 @@ const envSchema = z.object({
   HIVE_TOKEN: z.string().optional(),
   HIVE_TARGET: z.string().optional(),
   REDIS_URL: z.string().optional(),
+  PROMETHEUS_URL: z.string().optional(),
+  GRAFANA_URL: z.string().optional(),
 });
 
 export type Environment = z.infer<typeof envSchema>;
