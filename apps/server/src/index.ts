@@ -1,12 +1,12 @@
-import { initInstance } from './backend/instance'
-import { createGraphQLHandler } from './bff/graphql'
-import { initServer } from './server'
+import { initInstance } from './backend/instance';
+import { createGraphQLHandler } from './bff/graphql';
+import { initServer } from './server';
 
 async function main() {
-  await initInstance()
+  await initInstance();
 
-  const yoga = createGraphQLHandler()
-  initServer(yoga)
+  const yoga = createGraphQLHandler();
+  initServer(yoga);
 }
 
-main()
+main();

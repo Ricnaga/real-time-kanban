@@ -1,7 +1,7 @@
-import { actionAdapter } from '@/bff/adapters'
-import { ActionFacade } from '@/bff/facades'
+import { actionAdapter } from '@/bff/adapters';
+import { ActionConnector } from '@/bff/connectors';
 
 export function createActionAdapter() {
-  const facade = new ActionFacade()
-  return actionAdapter(facade)
+  const connector = new ActionConnector();
+  return actionAdapter(connector);
 }

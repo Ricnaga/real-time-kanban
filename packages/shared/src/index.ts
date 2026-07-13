@@ -1,66 +1,66 @@
 export type BoardDTO = {
-  id: string
-  title: string
-  actions: ActionDTO[]
-  createdAt: Date
-  updatedAt: Date
-}
+  id: string;
+  title: string;
+  actions: ActionDTO[];
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 export type ActionDTO = {
-  id: string
-  title: string
-  position: number
-  isDefault: boolean
-  tasks: TaskDTO[]
-}
+  id: string;
+  title: string;
+  position: number;
+  isDefault: boolean;
+  tasks: TaskDTO[];
+};
 
 export type TaskDTO = {
-  id: string
-  title: string
-  description: string | null
-  position: number
-  actionId: string
-  createdAt: Date
-  updatedAt: Date
-}
+  id: string;
+  title: string;
+  description: string | null;
+  position: number;
+  actionId: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 export type CreateBoardInput = {
-  title: string
-}
+  title: string;
+};
 
 export type CreateTaskInput = {
-  title: string
-  description?: string
-  actionId?: string
-}
+  title: string;
+  description?: string;
+  actionId?: string;
+};
 
 export type UpdateTaskInput = {
-  taskId: string
-  title?: string
-  description?: string
-}
+  taskId: string;
+  title?: string;
+  description?: string;
+};
 
 export type MoveTaskInput = {
-  taskId: string
-  targetActionId: string
-  position: number
-}
+  taskId: string;
+  targetActionId: string;
+  position: number;
+};
 
 export type CreateActionInput = {
-  title: string
-  position?: number
-}
+  title: string;
+  position?: number;
+};
 
 export type ReorderActionInput = {
-  actionId: string
-  newPosition: number
-}
+  actionId: string;
+  newPosition: number;
+};
 
 export type ActionStatsDTO = {
-  actionId: string
-  actionTitle: string
-  taskCount: number
-}
+  actionId: string;
+  actionTitle: string;
+  taskCount: number;
+};
 
 export type BoardEvent = {
   type:
@@ -72,6 +72,6 @@ export type BoardEvent = {
     | 'task:deleted'
     | 'action:created'
     | 'action:deleted'
-    | 'action:reordered'
-  payload: BoardDTO | ActionDTO | TaskDTO | ActionStatsDTO
-}
+    | 'action:reordered';
+  payload: BoardDTO | ActionDTO | TaskDTO | ActionStatsDTO;
+};

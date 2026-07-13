@@ -1,2 +1,2 @@
-export type { IActionPort } from './action-port'
-export { actionAdapter } from './action.adapter'
+export type { IActionPort } from './action-port';
+export { actionAdapter } from './action.adapter';

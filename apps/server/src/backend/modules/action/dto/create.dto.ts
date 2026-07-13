@@ -1,6 +1,6 @@
-import type { Step } from '../entities/action'
+import type { Step } from '../entities/action';
 
 export interface CreateActionDTO {
-  title: string
-  step: Step
+  title: string;
+  step: Step;
 }

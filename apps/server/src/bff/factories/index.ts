@@ -1,1 +1,1 @@
-export { createActionAdapter } from './action'
+export { createActionAdapter } from './action';

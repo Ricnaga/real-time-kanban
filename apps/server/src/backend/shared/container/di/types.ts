@@ -3,4 +3,4 @@ export const TYPES = {
   Repositories: {
     Action: Symbol.for('ActionRepository'),
   },
-}
+};

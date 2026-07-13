@@ -1,5 +1,5 @@
-import { v4 as uuid } from 'uuid'
-import { ActionId } from '../value-objects/action-id'
+import { v4 as uuid } from 'uuid';
+import { ActionId } from '../value-objects/action-id';
 
 export enum Step {
   BACKLOG = 'BACKLOG',
@@ -10,21 +10,21 @@ export enum Step {
 }
 
 export interface IAction {
-  id: ActionId
-  title: string
-  step: Step
+  id: ActionId;
+  title: string;
+  step: Step;
 }
 
-export type IActionCreate = Omit<IAction, 'id'> & { id?: ActionId }
+export type IActionCreate = Omit<IAction, 'id'> & { id?: ActionId };
 
 export class Action implements IAction {
-  public readonly id: ActionId
-  public title: string
-  public step: Step
+  public readonly id: ActionId;
+  public title: string;
+  public step: Step;
 
   constructor(data: IActionCreate) {
-    this.id = data.id ?? new ActionId(uuid())
-    this.title = data.title
-    this.step = data.step
+    this.id = data.id ?? new ActionId(uuid());
+    this.title = data.title;
+    this.step = data.step;
   }
 }

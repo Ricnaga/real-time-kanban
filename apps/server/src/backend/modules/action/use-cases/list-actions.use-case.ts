@@ -1,6 +1,6 @@
-import { injectable, inject } from 'inversify'
-import { TYPES } from '@/backend/shared/container/di/types'
-import type { IActionRepository } from '../repositories/action-repository.interface'
+import { injectable, inject } from 'inversify';
+import { TYPES } from '@/backend/shared/container/di/types';
+import type { IActionRepository } from '../repositories/action-repository.interface';
 
 @injectable()
 export class ListActionsUseCase {
@@ -10,6 +10,6 @@ export class ListActionsUseCase {
   ) {}
 
   async execute() {
-    return this.actionRepo.findAll()
+    return this.actionRepo.findAll();
   }
 }

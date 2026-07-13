@@ -1,1 +1,1 @@
-export { createActionAdapter } from './action.factory'
+export { createActionAdapter } from './action.factory';

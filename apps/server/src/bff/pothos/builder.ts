@@ -1,9 +1,9 @@
-import SchemaBuilder from '@pothos/core'
-import type { Context } from '@/bff/context'
+import SchemaBuilder from '@pothos/core';
+import type { Context } from '@/bff/context';
 
 export const builder = new SchemaBuilder<{
-  Context: Context
-}>({})
+  Context: Context;
+}>({});
 
-builder.queryType({})
-builder.mutationType({})
+builder.queryType({});
+builder.mutationType({});
