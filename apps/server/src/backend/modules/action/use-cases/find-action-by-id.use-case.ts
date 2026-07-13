@@ -1,5 +1,6 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '@/backend/shared/container/di/types';
+import { AppError } from '@/backend/shared/errors';
 import type { IActionRepository } from '../repositories/action-repository.interface';
 
 @injectable()
@@ -11,7 +12,7 @@ export class FindActionByIdUseCase {
 
   async execute(actionId: string) {
     const action = await this.actionRepo.findById(actionId);
-    if (!action) throw new Error('Action not found');
+    if (!action) throw new AppError(404, 'Action not found');
     return action;
   }
 }

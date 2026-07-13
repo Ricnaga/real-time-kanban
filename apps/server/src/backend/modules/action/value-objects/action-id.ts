@@ -1,4 +1,5 @@
 import { v4 as uuid } from 'uuid';
+import { AppError } from '@/backend/shared/errors';
 
 export class ActionId {
   private static readonly UUID_REGEX =
@@ -13,7 +14,7 @@ export class ActionId {
     }
 
     if (!ActionId.UUID_REGEX.test(value)) {
-      throw new Error('ActionId must be a valid UUID');
+      throw new AppError(400, 'ActionId must be a valid UUID');
     }
 
     this.value = value;

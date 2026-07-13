@@ -1,4 +1,5 @@
 import { injectable, inject } from 'inversify';
+import { BaseController } from '@/backend/shared/controllers';
 import type { CreateActionDTO } from '../dto/create.dto';
 import type { UpdateActionDTO } from '../dto/update.dto';
 import { CreateActionUseCase } from '../use-cases/create-action.use-case';
@@ -8,7 +9,7 @@ import { UpdateActionUseCase } from '../use-cases/update-action.use-case';
 import { DeleteActionUseCase } from '../use-cases/delete-action.use-case';
 
 @injectable()
-export class ActionController {
+export class ActionController extends BaseController {
   constructor(
     @inject(CreateActionUseCase)
     private readonly createUseCase: CreateActionUseCase,
@@ -20,28 +21,32 @@ export class ActionController {
     private readonly updateUseCase: UpdateActionUseCase,
     @inject(DeleteActionUseCase)
     private readonly deleteUseCase: DeleteActionUseCase,
-  ) {}
+  ) {
+    super();
+  }
 
   async create(dto: CreateActionDTO) {
-    return this.createUseCase.execute(dto.title, dto.step);
+    return this.execute(() => this.createUseCase.execute(dto.title, dto.step));
   }
 
   async findAll() {
-    return this.listUseCase.execute();
+    return this.execute(() => this.listUseCase.execute());
   }
 
   async findById(actionId: string) {
-    return this.findByIdUseCase.execute(actionId);
+    return this.execute(() => this.findByIdUseCase.execute(actionId));
   }
 
   async update(dto: UpdateActionDTO) {
-    return this.updateUseCase.execute(dto.id, {
-      title: dto.title,
-      step: dto.step,
-    });
+    return this.execute(() =>
+      this.updateUseCase.execute(dto.id, {
+        title: dto.title,
+        step: dto.step,
+      }),
+    );
   }
 
   async delete(actionId: string) {
-    return this.deleteUseCase.execute(actionId);
+    return this.execute(() => this.deleteUseCase.execute(actionId));
   }
 }
