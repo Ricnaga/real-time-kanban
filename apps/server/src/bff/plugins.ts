@@ -8,7 +8,7 @@ function createPlugins(): Plugin<{}>[] {
 
   return [
     usePrometheus({ endpoint: '/metrics' }),
-    ...(HIVE_TOKEN && HIVE_TARGET
+    ...(HIVE_TOKEN?.startsWith('hvo1/') && HIVE_TARGET
       ? [
           useHive({
             enabled: true,
