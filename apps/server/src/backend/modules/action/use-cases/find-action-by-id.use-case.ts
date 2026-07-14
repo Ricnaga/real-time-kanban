@@ -12,7 +12,7 @@ export class FindActionByIdUseCase {
 
   async execute(actionId: string) {
     const action = await this.actionRepo.findById(actionId);
-    if (!action) throw new AppError(404, 'Action not found');
+    if (!action) throw new AppError(404, 'Ação não encontrada');
     return action;
   }
 }

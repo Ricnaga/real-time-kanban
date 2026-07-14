@@ -12,8 +12,11 @@ export class DeleteActionUseCase {
 
   async execute(actionId: string) {
     const action = await this.actionRepo.findById(actionId);
-    if (!action) throw new AppError(404, 'Action not found');
+    if (!action) throw new AppError(404, 'Ação não encontrada');
+
+    const deletedPosition = action.position;
 
     await this.actionRepo.delete(actionId);
+    await this.actionRepo.reindexAfterDelete(deletedPosition);
   }
 }
