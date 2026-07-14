@@ -22,5 +22,10 @@ export function actionAdapter(connector: ActionConnector): IActionPort {
     },
 
     delete: (id) => connector.delete(id),
+
+    move: async (actionId, newPosition) => {
+      const actions = await connector.move(actionId, newPosition);
+      return actions.map((action) => ActionDomain.fromModel(action));
+    },
   };
 }

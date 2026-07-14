@@ -10,6 +10,21 @@ builder.mutationField('createAction', (t) =>
       step: t.arg.string({ required: true }),
     },
     resolve: (_, args, ctx: Context) =>
-      ctx.adapters.action.create({ title: args.title, step: args.step }),
+      ctx.adapters.action.create({
+        title: args.title,
+        step: args.step,
+      }),
+  }),
+);
+
+builder.mutationField('moveAction', (t) =>
+  t.field({
+    type: [Action],
+    args: {
+      actionId: t.arg.id({ required: true }),
+      newPosition: t.arg.int({ required: true }),
+    },
+    resolve: (_, args, ctx: Context) =>
+      ctx.adapters.action.move(args.actionId, args.newPosition),
   }),
 );

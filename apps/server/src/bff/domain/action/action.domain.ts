@@ -7,6 +7,7 @@ export class ActionDomain extends BaseDomain {
   readonly id: string;
   readonly title: string;
   readonly step: string;
+  readonly position: number;
 
   constructor(model: ActionModel) {
     super();
@@ -14,6 +15,7 @@ export class ActionDomain extends BaseDomain {
     this.id = ActionDomain.uuidToRelay(model.id);
     this.title = model.title;
     this.step = model.step;
+    this.position = model.position;
   }
 
   static fromModel(model: ActionModel): ActionDomain {

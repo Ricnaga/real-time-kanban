@@ -8,5 +8,6 @@ Action.implement({
     id: t.exposeID('id'),
     title: t.exposeString('title'),
     step: t.exposeString('step'),
+    position: t.exposeInt('position'),
   }),
 });

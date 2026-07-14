@@ -15,6 +15,7 @@ export class ActionConnector {
       id: a.id.value,
       title: a.title,
       step: a.step,
+      position: a.position,
     }));
   }
 
@@ -24,6 +25,7 @@ export class ActionConnector {
       id: action.id.value,
       title: action.title,
       step: action.step,
+      position: action.position,
     };
   }
 
@@ -36,6 +38,7 @@ export class ActionConnector {
       id: action.id.value,
       title: action.title,
       step: action.step,
+      position: action.position,
     };
   }
 
@@ -43,20 +46,33 @@ export class ActionConnector {
     id: string;
     title?: string;
     step?: string;
+    position: number;
   }): Promise<ActionModel> {
     const action = await this.controller.update({
       id: data.id,
       title: data.title,
       step: data.step,
+      position: data.position,
     });
     return {
       id: action.id.value,
       title: action.title,
       step: action.step,
+      position: action.position,
     };
   }
 
   async delete(id: string): Promise<void> {
     await this.controller.delete(id);
+  }
+
+  async move(actionId: string, newPosition: number): Promise<ActionModel[]> {
+    const actions = await this.controller.move(actionId, newPosition);
+    return actions.map((a) => ({
+      id: a.id.value,
+      title: a.title,
+      step: a.step,
+      position: a.position,
+    }));
   }
 }
