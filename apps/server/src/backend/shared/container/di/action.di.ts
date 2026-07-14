@@ -5,6 +5,7 @@ import { FindActionByIdUseCase } from '@/backend/modules/action/use-cases/find-a
 import { ListActionsUseCase } from '@/backend/modules/action/use-cases/list-actions.use-case';
 import { UpdateActionUseCase } from '@/backend/modules/action/use-cases/update-action.use-case';
 import { DeleteActionUseCase } from '@/backend/modules/action/use-cases/delete-action.use-case';
+import { MoveActionUseCase } from '@/backend/modules/action/use-cases/move-action.use-case';
 
 container.bind(CreateActionUseCase).toSelf().inSingletonScope();
 
@@ -15,5 +16,7 @@ container.bind(ListActionsUseCase).toSelf().inSingletonScope();
 container.bind(UpdateActionUseCase).toSelf().inSingletonScope();
 
 container.bind(DeleteActionUseCase).toSelf().inSingletonScope();
+
+container.bind(MoveActionUseCase).toSelf().inSingletonScope();
 
 container.bind(ActionController).toSelf().inSingletonScope();

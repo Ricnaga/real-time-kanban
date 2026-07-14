@@ -1,9 +1,10 @@
-import { pgTable, uuid, text, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, integer, timestamp } from 'drizzle-orm/pg-core';
 
 export const actions = pgTable('actions', {
   id: uuid('id').defaultRandom().primaryKey(),
   title: text('title').notNull(),
   step: text('step').notNull(),
+  position: integer('position').notNull().default(0),
 });
 
 export const tasks = pgTable('tasks', {
