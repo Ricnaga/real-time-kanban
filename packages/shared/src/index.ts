@@ -51,7 +51,7 @@ export type CreateActionInput = {
   position?: number;
 };
 
-export type ReorderActionInput = {
+export type MoveActionInput = {
   actionId: string;
   newPosition: number;
 };
@@ -72,6 +72,6 @@ export type BoardEvent = {
     | 'task:deleted'
     | 'action:created'
     | 'action:deleted'
-    | 'action:reordered';
+    | 'action:moved';
   payload: BoardDTO | ActionDTO | TaskDTO | ActionStatsDTO;
 };
