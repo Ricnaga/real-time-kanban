@@ -14,7 +14,7 @@ export class ActionId {
     }
 
     if (!ActionId.UUID_REGEX.test(value)) {
-      throw new AppError(400, 'ActionId must be a valid UUID');
+      throw new AppError(400, 'ActionId deve ser um UUID válido');
     }
 
     this.value = value;
