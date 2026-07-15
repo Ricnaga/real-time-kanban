@@ -2,6 +2,7 @@ import { injectable, inject } from 'inversify';
 import { BaseController } from '@/backend/shared/controllers';
 import type { CreateActionDTO } from '../dto/create.dto';
 import type { UpdateActionDTO } from '../dto/update.dto';
+import type { MoveActionDTO } from '../dto/move.dto';
 import { CreateActionUseCase } from '../use-cases/create-action.use-case';
 import { FindActionByIdUseCase } from '../use-cases/find-action-by-id.use-case';
 import { ListActionsUseCase } from '../use-cases/list-actions.use-case';
@@ -48,7 +49,7 @@ export class ActionController extends BaseController {
     return this.execute(() => this.deleteUseCase.execute(actionId));
   }
 
-  async move(actionId: string, newPosition: number) {
-    return this.execute(() => this.moveUseCase.execute(actionId, newPosition));
+  async move(dto: MoveActionDTO) {
+    return this.execute(() => this.moveUseCase.execute(dto));
   }
 }

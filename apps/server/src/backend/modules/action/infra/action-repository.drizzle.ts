@@ -9,7 +9,7 @@ export class DrizzleActionRepository implements IActionRepository {
 
   async create(action: Action) {
     await this.db.insert(schema.actions).values({
-      id: action.id.value,
+      id: action.id,
       title: action.title,
       step: action.step,
       position: action.position,
@@ -72,7 +72,7 @@ export class DrizzleActionRepository implements IActionRepository {
         step: action.step,
         position: action.position,
       })
-      .where(eq(schema.actions.id, action.id.value));
+      .where(eq(schema.actions.id, action.id));
   }
 
   async delete(id: string) {
