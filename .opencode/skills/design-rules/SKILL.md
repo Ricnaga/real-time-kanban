@@ -36,3 +36,4 @@ description: Princípios de design de código — SOLID, SOC, DRY, YAGNI, KISS, 
 - Nomes significativos para variáveis, funções e componentes
 - Funções pequenas e com propósito único
 - Comentários explicam o "porquê", não o "como"
+- **Funções com 3+ parâmetros devem receber um objeto tipado** (ex: `fn({ id, title, position })` em vez de `fn(id, title, position)`)
