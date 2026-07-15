@@ -2,11 +2,13 @@
   "name": "real-time-kanban",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@11.10.0",
   "scripts": {
-    "dev": "pnpm --filter @kanban/client dev",
-    "build": "pnpm --filter @kanban/client build",
-    "start": "pnpm --filter @kanban/client start",
-    "server": "pnpm --filter @kanban/server dev",
+    "start": "turbo dev",
+    "start:client": "turbo dev --filter=@kanban/client",
+    "start:server": "turbo dev --filter=@kanban/server",
+    "build": "turbo build",
+    "typecheck": "turbo typecheck",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "format": "prettier --write .",
@@ -18,6 +20,7 @@
     "lint-staged": "^17.0.8",
     "oxlint": "^1.73.0",
     "prettier": "^3.9.4",
+    "turbo": "^2.10.5",
     "typescript": "^5"
   }
 }
