@@ -11,6 +11,7 @@ export const tasks = pgTable('tasks', {
   id: uuid('id').defaultRandom().primaryKey(),
   title: text('title').notNull(),
   description: text('description'),
+  position: integer('position').notNull().default(0),
   actionId: uuid('action_id')
     .notNull()
     .references(() => actions.id, { onDelete: 'cascade' }),
