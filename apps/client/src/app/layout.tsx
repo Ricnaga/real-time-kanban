@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
-import { UrqlProvider } from '../lib/UrqlProvider';
+import { UrqlProvider } from '../services/urql-provider';
 import './globals.css';
 
 const geistSans = Geist({
