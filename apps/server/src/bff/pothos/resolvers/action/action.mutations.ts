@@ -9,11 +9,15 @@ builder.mutationField('createAction', (t) =>
       title: t.arg.string({ required: true }),
       step: t.arg.string({ required: true }),
     },
-    resolve: (_, args, ctx: Context) =>
-      ctx.adapters.action.create({
+    resolve: async (_, args, ctx: Context) => {
+      const action = await ctx.adapters.action.create({
         title: args.title,
         step: args.step,
-      }),
+      });
+
+      await ctx.pubSub.publish('ACTION_CREATED', action);
+      return action;
+    },
   }),
 );
 
@@ -24,7 +28,14 @@ builder.mutationField('moveAction', (t) =>
       actionId: t.arg.id({ required: true }),
       newPosition: t.arg.int({ required: true }),
     },
-    resolve: (_, args, ctx: Context) =>
-      ctx.adapters.action.move(args.actionId, args.newPosition),
+    resolve: async (_, args, ctx: Context) => {
+      const actions = await ctx.adapters.action.move(
+        args.actionId,
+        args.newPosition,
+      );
+
+      await ctx.pubSub.publish('ACTION_MOVED', actions);
+      return actions;
+    },
   }),
 );

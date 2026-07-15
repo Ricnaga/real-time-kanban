@@ -16,3 +16,4 @@ builder.addScalarType('Date', DateResolver, {});
 
 builder.queryType({});
 builder.mutationType({});
+builder.subscriptionType({});
