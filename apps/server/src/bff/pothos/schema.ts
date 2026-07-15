@@ -1,4 +1,4 @@
 import { builder } from './builder';
-import '@/bff/resolvers';
+import './resolvers';
 
 export const schema = builder.toSchema();
