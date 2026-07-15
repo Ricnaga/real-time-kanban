@@ -12,7 +12,7 @@ export class ActionConnector {
   async findAll(): Promise<ActionModel[]> {
     const actions = await this.controller.findAll();
     return actions.map((a) => ({
-      id: a.id.value,
+      id: a.id,
       title: a.title,
       step: a.step,
       position: a.position,
@@ -22,7 +22,7 @@ export class ActionConnector {
   async findById(id: string): Promise<ActionModel> {
     const action = await this.controller.findById(id);
     return {
-      id: action.id.value,
+      id: action.id,
       title: action.title,
       step: action.step,
       position: action.position,
@@ -35,7 +35,7 @@ export class ActionConnector {
       step: data.step,
     });
     return {
-      id: action.id.value,
+      id: action.id,
       title: action.title,
       step: action.step,
       position: action.position,
@@ -55,7 +55,7 @@ export class ActionConnector {
       position: data.position,
     });
     return {
-      id: action.id.value,
+      id: action.id,
       title: action.title,
       step: action.step,
       position: action.position,
@@ -67,9 +67,9 @@ export class ActionConnector {
   }
 
   async move(actionId: string, newPosition: number): Promise<ActionModel[]> {
-    const actions = await this.controller.move(actionId, newPosition);
+    const actions = await this.controller.move({ actionId, newPosition });
     return actions.map((a) => ({
-      id: a.id.value,
+      id: a.id,
       title: a.title,
       step: a.step,
       position: a.position,
