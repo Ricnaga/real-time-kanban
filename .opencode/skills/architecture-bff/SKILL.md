@@ -21,17 +21,16 @@ bff/
   graphql.ts              # Yoga (GraphQL server) factory entry point
   context.ts              # GraphQL context (injects adapters into resolvers)
 
-  pothos/                 # Schema definition (Pothos + graphql-yoga)
+  pothos/                 # Schema definition — tudo que é Pothos vive aqui
     builder.ts            # Pothos SchemaBuilder instance + query/mutation types
     schema.ts             # Assembles the final GraphQL schema (side-effect imports)
-
-  resolvers/              # GraphQL operation definitions (queries, mutations)
-    index.ts              # Barrel: imports all resolver modules
-    <module>/
-      <module>.types.ts   # Pothos object type (objectRef + expose*)
-      <module>.queries.ts # Query fields
-      <module>.mutations.ts # Mutation fields
-      index.ts            # Barrel: imports types, queries, mutations (order matters)
+    resolvers/            # GraphQL operation definitions (queries, mutations)
+      index.ts            # Barrel: imports all resolver modules
+      <module>/
+        <module>.types.ts   # Pothos object type (objectRef + expose*)
+        <module>.queries.ts # Query fields
+        <module>.mutations.ts # Mutation fields
+        index.ts            # Barrel: imports types, queries, mutations (order matters)
 
   domain/                 # BFF-level domain objects (not backend domain)
     base.domain.ts        # Relay global ID helpers (BaseDomain)
@@ -92,23 +91,23 @@ Client GraphQL request
 
 ### Camadas do BFF (por módulo)
 
-| Camada        | Arquivo                                     | Responsabilidade                             |
-| ------------- | ------------------------------------------- | -------------------------------------------- |
-| **Resolver**  | `resolvers/<module>/<module>.queries.ts`    | Define query fields (Pothos)                 |
-| **Resolver**  | `resolvers/<module>/<module>.mutations.ts`  | Define mutation fields (Pothos)              |
-| **Type**      | `resolvers/<module>/<module>.types.ts`      | Pothos object type (`objectRef` + `expose*`) |
-| **Domain**    | `domain/<module>/<module>.domain.ts`        | Relay global IDs (`BaseDomain`)              |
-| **Port**      | `adapters/<module>/<module>-port.ts`        | Interface `I<Module>Port`                    |
-| **Adapter**   | `adapters/<module>/<module>.adapter.ts`     | Connector → Domain mapping                   |
-| **Connector** | `connectors/<module>/<module>.connector.ts` | Chama `BackendController` via DI             |
-| **Model**     | `connectors/<module>/<module>.model.ts`     | DTO type (primitivos)                        |
-| **Factory**   | `factories/<module>/<module>.factory.ts`    | Cria connector + adapter                     |
+| Camada        | Arquivo                                           | Responsabilidade                             |
+| ------------- | ------------------------------------------------- | -------------------------------------------- |
+| **Resolver**  | `pothos/resolvers/<module>/<module>.queries.ts`   | Define query fields (Pothos)                 |
+| **Resolver**  | `pothos/resolvers/<module>/<module>.mutations.ts` | Define mutation fields (Pothos)              |
+| **Type**      | `pothos/resolvers/<module>/<module>.types.ts`     | Pothos object type (`objectRef` + `expose*`) |
+| **Domain**    | `domain/<module>/<module>.domain.ts`              | Relay global IDs (`BaseDomain`)              |
+| **Port**      | `adapters/<module>/<module>-port.ts`              | Interface `I<Module>Port`                    |
+| **Adapter**   | `adapters/<module>/<module>.adapter.ts`           | Connector → Domain mapping                   |
+| **Connector** | `connectors/<module>/<module>.connector.ts`       | Chama `BackendController` via DI             |
+| **Model**     | `connectors/<module>/<module>.model.ts`           | DTO type (primitivos)                        |
+| **Factory**   | `factories/<module>/<module>.factory.ts`          | Cria connector + adapter                     |
 
 ### Exemplo de fluxo (createAction)
 
 ```
 Mutation createAction(title: "Meu Board", step: "BACKLOG")
-  → Pothos resolver (resolvers/action/action.mutations.ts)
+  → Pothos resolver (pothos/resolvers/action/action.mutations.ts)
     → ctx.adapters.action.create({ title, step })
       → actionAdapter (adapters/action/action.adapter.ts)
         → ActionConnector.create({ title, step })
@@ -159,7 +158,7 @@ O plugin `use-error-handling.ts` mascara erros do backend para o cliente GraphQL
 
 ```
 bff/
-  resolvers/action/
+  pothos/resolvers/action/
     action.types.ts          # builder.objectRef<ActionDomain>('Action')
     action.queries.ts        # actions query
     action.mutations.ts      # createAction, moveAction mutations
@@ -184,7 +183,7 @@ bff/
 
 1. Criar estrutura de pastas seguindo o módulo `action` como referência
 2. **Um arquivo por operação** (query, mutation, type)
-3. **Barrel imports** em ordem: types → queries → mutations (no index.ts do resolver)
+3. **Barrel imports** em ordem: types → queries → mutations (no `pothos/resolvers/<module>/index.ts`)
 4. Resolvers delegam para `ctx.adapters.<module>` — nunca para o controller diretamente
 5. Connectors são a **única camada** que toca o backend (via Inversify DI)
 6. Adapters mapeiam Model → Domain (com Relay IDs)
@@ -192,13 +191,13 @@ bff/
 8. Atualizar `adapters/index.ts` para criar novo adapter via factory
 9. Atualizar `connectors/index.ts` para exportar novo connector
 10. Atualizar `factories/index.ts` para exportar nova factory
-11. Atualizar `resolvers/index.ts` para importar novo módulo
+11. Atualizar `pothos/resolvers/index.ts` para importar novo módulo
 
 ### Exemplo de fluxo (moveAction)
 
 ```
 Mutation moveAction(actionId: "base64id", newPosition: 2)
-  → Pothos resolver (resolvers/action/action.mutations.ts)
+  → Pothos resolver (pothos/resolvers/action/action.mutations.ts)
     → ctx.adapters.action.move(actionId, newPosition)
       → actionAdapter.move()
         → ActionConnector.move()
@@ -221,3 +220,4 @@ Mutation moveAction(actionId: "base64id", newPosition: 2)
 - Connectors mapeiam entidades de domínio → modelos planos (primitivos)
 - Adapters mapeiam modelos → domains (com Relay IDs)
 - O BFF e backend compartilham o mesmo processo Node.js (chamadas diretas via DI)
+- `pothos/` é a única camada acoplada à lib de schema — se trocar Pothos por outra lib (Nexus, TypeGraphQL, SDL-first), substitua só essa pasta; connectors, adapters, domain, factories e plugins permanecem intactos
