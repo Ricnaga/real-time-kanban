@@ -9,10 +9,14 @@ type ActionsQueryResult = {
   actions: ActionModel[];
 };
 
-export function useActions() {
+type UseActionsOptions = {
+  initialData?: ActionModel[];
+};
+
+export function useActions({ initialData = [] }: UseActionsOptions = {}) {
   const [queryResult] = useQuery<ActionsQueryResult>({ query: GET_ACTIONS });
 
-  const base = queryResult.data?.actions ?? [];
+  const base = queryResult.data?.actions ?? initialData;
 
   useSubscription<{ actionCreated: ActionModel }, ActionsQueryResult>(
     { query: ON_ACTION_CREATED },

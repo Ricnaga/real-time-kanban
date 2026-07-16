@@ -14,13 +14,20 @@ type TasksQueryResult = {
   tasksByAction: TaskModel[];
 };
 
-export function useTasksByAction(actionId: string) {
+type UseTasksByActionOptions = {
+  initialData?: TaskModel[];
+};
+
+export function useTasksByAction(
+  actionId: string,
+  { initialData = [] }: UseTasksByActionOptions = {},
+) {
   const [queryResult] = useQuery<TasksQueryResult>({
     query: GET_TASKS_BY_ACTION,
     variables: { actionId },
   });
 
-  const base = queryResult.data?.tasksByAction ?? [];
+  const base = queryResult.data?.tasksByAction ?? initialData;
 
   useSubscription<{ taskCreated: TaskModel }, TasksQueryResult>(
     { query: ON_TASK_CREATED, pause: !actionId },
