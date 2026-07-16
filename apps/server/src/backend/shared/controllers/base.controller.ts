@@ -6,6 +6,7 @@ export abstract class BaseController {
       return await fn();
     } catch (error) {
       if (error instanceof AppError) throw error;
+      console.error('[BaseController] Erro inesperado:', error);
       throw new AppError(500, 'Internal server error');
     }
   }
