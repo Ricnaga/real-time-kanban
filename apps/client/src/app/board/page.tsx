@@ -1,16 +1,16 @@
-'use client';
+import { getClient } from '@/services/urql-rsc';
+import { GET_ACTIONS } from '@/services/graphql/queries';
+import { Board } from './_components/board';
 
-import { useActions } from '@/services/hooks/use-actions';
-import { Column } from './_components/column/column';
+export default async function BoardPage() {
+  const client = getClient();
+  const result = await client.query(GET_ACTIONS, {});
 
-export default function Board() {
-  const { actions, fetching, error } = useActions();
-
-  if (error) {
+  if (result.error) {
     return (
       <div className="flex flex-1 items-center justify-center">
         <p className="text-sm text-red-500">
-          Erro ao carregar o board: {error.message}
+          Erro ao carregar o board: {result.error.message}
         </p>
       </div>
     );
@@ -23,23 +23,7 @@ export default function Board() {
           Kanban Board
         </h1>
       </header>
-      <main className="flex flex-1 gap-4 p-6 overflow-x-auto">
-        {fetching && actions.length === 0 && (
-          <div className="flex flex-1 items-center justify-center">
-            <p className="text-sm text-zinc-500">Carregando board...</p>
-          </div>
-        )}
-        {!fetching && actions.length === 0 && (
-          <div className="flex flex-1 items-center justify-center">
-            <p className="text-sm text-zinc-500">Nenhuma action encontrada</p>
-          </div>
-        )}
-        {actions
-          .sort((a, b) => a.position - b.position)
-          .map((action) => (
-            <Column key={action.id} action={action} />
-          ))}
-      </main>
+      <Board initialActions={result.data?.actions ?? []} />
     </div>
   );
 }
