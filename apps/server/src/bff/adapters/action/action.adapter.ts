@@ -24,7 +24,8 @@ export function actionAdapter(connector: ActionConnector): IActionPort {
     delete: (id) => connector.delete(id),
 
     move: async (actionId, newPosition) => {
-      const actions = await connector.move(actionId, newPosition);
+      const uuid = ActionDomain.relayToUuid(actionId);
+      const actions = await connector.move(uuid, newPosition);
       return actions.map((action) => ActionDomain.fromModel(action));
     },
   };
