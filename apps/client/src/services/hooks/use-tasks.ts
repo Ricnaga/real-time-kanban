@@ -31,9 +31,14 @@ export function useTasksByAction(
 
   useSubscription<{ taskCreated: TaskModel }, TasksQueryResult>(
     { query: ON_TASK_CREATED, pause: !actionId },
-    (prev, data) => ({
-      tasksByAction: [...(prev?.tasksByAction ?? []), data.taskCreated],
-    }),
+    (prev, data) => {
+      if (data.taskCreated.actionId !== actionId) {
+        return prev ?? { tasksByAction: [] };
+      }
+      return {
+        tasksByAction: [...(prev?.tasksByAction ?? []), data.taskCreated],
+      };
+    },
   );
 
   useSubscription<{ taskUpdated: TaskModel }, TasksQueryResult>(
