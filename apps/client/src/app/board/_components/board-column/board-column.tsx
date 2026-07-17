@@ -1,7 +1,14 @@
 'use client';
 
+import { useEffect, useMemo } from 'react';
+import { useDroppable } from '@dnd-kit/core';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { ScrollArea } from 'radix-ui';
 import { useTasksByAction } from '@/services/hooks/use-tasks';
+import { useBoardDnd } from '../../_providers/board-dnd-context';
 import { boardColumnStyles } from './board-column.tv';
 import { CardTask } from '../card-task/card-task';
 import type { ActionModel } from '@/schemas';
@@ -13,9 +20,22 @@ type BoardColumnProps = {
 export function BoardColumn({ action }: BoardColumnProps) {
   const { tasks, fetching } = useTasksByAction(action.id);
   const styles = boardColumnStyles();
+  const { registerTaskCount } = useBoardDnd();
+
+  const { setNodeRef } = useDroppable({ id: action.id });
+
+  const taskIds = useMemo(() => tasks.map((t) => t.id), [tasks]);
+
+  useEffect(() => {
+    registerTaskCount(action.id, tasks.length);
+  }, [action.id, tasks.length, registerTaskCount]);
 
   return (
-    <section className={styles.base()} aria-label={action.title}>
+    <section
+      ref={setNodeRef}
+      className={styles.base()}
+      aria-label={action.title}
+    >
       <header className={styles.header()}>
         <h2 className={styles.title()}>{action.title}</h2>
         <span className={styles.count()}>{tasks.length}</span>
@@ -32,11 +52,16 @@ export function BoardColumn({ action }: BoardColumnProps) {
               Nenhuma task
             </p>
           )}
-          <ul className={styles.list()} role="list">
-            {tasks.map((task) => (
-              <CardTask key={task.id} task={task} />
-            ))}
-          </ul>
+          <SortableContext
+            items={taskIds}
+            strategy={verticalListSortingStrategy}
+          >
+            <ul className={styles.list()} role="list">
+              {tasks.map((task) => (
+                <CardTask key={task.id} task={task} />
+              ))}
+            </ul>
+          </SortableContext>
         </ScrollArea.Viewport>
         <ScrollArea.Scrollbar orientation="vertical">
           <ScrollArea.Thumb />

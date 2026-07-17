@@ -1,21 +1,53 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { useBoardDnd } from '../../_providers/board-dnd-context';
 import { cardTaskStyles } from './card-task.tv';
-import { CardTaskActions } from './_components/card-task-actions';
-import { DeleteTaskDialog } from './_components/dialog-delete-task';
-import { EditTaskDialog } from './_components/dialog-edit-task';
+import { CardTaskActions } from './card-task-actions/card-task-actions';
+import { DeleteTaskDialog } from './dialog-delete-task/dialog-delete-task';
+import { EditTaskDialog } from './dialog-edit-task/dialog-edit-task';
 import type { TaskModel } from '@/schemas';
 
 type CardTaskProps = {
   task: TaskModel;
+  isOverlay?: boolean;
 };
 
-export function CardTask({ task }: CardTaskProps) {
+export function CardTask({ task, isOverlay = false }: CardTaskProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const { registerTask, unregisterTask, registerTaskData } = useBoardDnd();
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: task.id, disabled: isOverlay });
+
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    transition,
+  };
+
+  useEffect(() => {
+    if (isOverlay) return;
+    registerTask(task.id, task.actionId);
+    registerTaskData(task.id, task);
+    return () => unregisterTask(task.id);
+  }, [task, isOverlay, registerTask, registerTaskData, unregisterTask]);
 
   return (
     <>
-      <li className={cardTaskStyles()}>
+      <li
+        ref={setNodeRef}
+        className={cardTaskStyles({ dragging: isDragging })}
+        style={!isOverlay ? style : undefined}
+        {...attributes}
+        {...listeners}
+      >
         <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
           {task.title}
         </span>
@@ -30,20 +62,24 @@ export function CardTask({ task }: CardTaskProps) {
         />
       </li>
 
-      <EditTaskDialog
-        open={editDialogOpen}
-        onOpenChange={setEditDialogOpen}
-        taskId={task.id}
-        initialTitle={task.title}
-        initialDescription={task.description}
-      />
+      {!isOverlay && (
+        <>
+          <EditTaskDialog
+            open={editDialogOpen}
+            onOpenChange={setEditDialogOpen}
+            taskId={task.id}
+            initialTitle={task.title}
+            initialDescription={task.description}
+          />
 
-      <DeleteTaskDialog
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
-        taskId={task.id}
-        taskTitle={task.title}
-      />
+          <DeleteTaskDialog
+            open={deleteDialogOpen}
+            onOpenChange={setDeleteDialogOpen}
+            taskId={task.id}
+            taskTitle={task.title}
+          />
+        </>
+      )}
     </>
   );
 }
