@@ -1,8 +1,7 @@
 'use client';
 
-import { useQuery, useSubscription } from 'urql';
+import { useQuery } from 'urql';
 import { GET_ACTIONS } from '../graphql/queries';
-import { ON_ACTION_CREATED, ON_ACTION_MOVED } from '../graphql/subscriptions';
 import type { ActionModel } from '@/schemas';
 
 type ActionsQueryResult = {
@@ -16,24 +15,10 @@ type UseActionsOptions = {
 export function useActions({ initialData = [] }: UseActionsOptions = {}) {
   const [queryResult] = useQuery<ActionsQueryResult>({ query: GET_ACTIONS });
 
-  const base = queryResult.data?.actions ?? initialData;
-
-  useSubscription<{ actionCreated: ActionModel }, ActionsQueryResult>(
-    { query: ON_ACTION_CREATED },
-    (prev, data) => ({
-      actions: [...(prev?.actions ?? []), data.actionCreated],
-    }),
-  );
-
-  useSubscription<{ actionMoved: ActionModel[] }, ActionsQueryResult>(
-    { query: ON_ACTION_MOVED },
-    (_prev, data) => ({
-      actions: data.actionMoved,
-    }),
-  );
+  const actions = queryResult.data?.actions ?? initialData;
 
   return {
-    actions: base,
+    actions,
     fetching: queryResult.fetching,
     error: queryResult.error,
   };

@@ -1,13 +1,7 @@
 'use client';
 
-import { useQuery, useSubscription } from 'urql';
+import { useQuery } from 'urql';
 import { GET_TASKS_BY_ACTION } from '../graphql/queries';
-import {
-  ON_TASK_CREATED,
-  ON_TASK_UPDATED,
-  ON_TASK_DELETED,
-  ON_TASK_MOVED,
-} from '../graphql/subscriptions';
 import type { TaskModel } from '@/schemas';
 
 type TasksQueryResult = {
@@ -27,47 +21,10 @@ export function useTasksByAction(
     variables: { actionId },
   });
 
-  const base = queryResult.data?.tasksByAction ?? initialData;
-
-  useSubscription<{ taskCreated: TaskModel }, TasksQueryResult>(
-    { query: ON_TASK_CREATED, pause: !actionId },
-    (prev, data) => {
-      if (data.taskCreated.actionId !== actionId) {
-        return prev ?? { tasksByAction: [] };
-      }
-      return {
-        tasksByAction: [...(prev?.tasksByAction ?? []), data.taskCreated],
-      };
-    },
-  );
-
-  useSubscription<{ taskUpdated: TaskModel }, TasksQueryResult>(
-    { query: ON_TASK_UPDATED, pause: !actionId },
-    (prev, data) => ({
-      tasksByAction: (prev?.tasksByAction ?? []).map((task) =>
-        task.id === data.taskUpdated.id ? data.taskUpdated : task,
-      ),
-    }),
-  );
-
-  useSubscription<{ taskDeleted: string }, TasksQueryResult>(
-    { query: ON_TASK_DELETED, pause: !actionId },
-    (prev, data) => ({
-      tasksByAction: (prev?.tasksByAction ?? []).filter(
-        (task) => task.id !== data.taskDeleted,
-      ),
-    }),
-  );
-
-  useSubscription<{ taskMoved: TaskModel[] }, TasksQueryResult>(
-    { query: ON_TASK_MOVED, pause: !actionId },
-    (_prev, data) => ({
-      tasksByAction: data.taskMoved,
-    }),
-  );
+  const tasks = queryResult.data?.tasksByAction ?? initialData;
 
   return {
-    tasks: base,
+    tasks,
     fetching: queryResult.fetching,
     error: queryResult.error,
   };
