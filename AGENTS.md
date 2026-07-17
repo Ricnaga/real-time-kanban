@@ -7,10 +7,19 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # real-time-kanban
 
+## Stack
+
+- **React 19** + **Next.js 16** (App Router, Turbopack)
+- **Tailwind CSS v4** + `tailwind-variants`
+- **URQL** + `@urql/exchange-graphcache` (GraphQL)
+- **Radix UI** (primitivas de acessibilidade)
+- **@dnd-kit** (drag and drop)
+- **TypeScript** (tipagem forte, sem `any`)
+
 ## Agentes
 
 - `@front-end-engineer` (`mode: primary`) — dono do frontend (`apps/client/`).
-  React, Next, Tailwind, componentes, performance.
+  React 19, Next.js 16, Tailwind CSS v4, componentes, performance.
   - Desenvolve telas: consulta `@ux-ui-designer` pra melhor tela e componentes.
   - Desenvolve lógica: consulta skills documentadas e `@software-engineer`.
 
@@ -34,6 +43,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `.opencode/skills/architecture-backend/SKILL.md` — arquitetura backend
 - `.opencode/skills/architecture-bff/SKILL.md` — arquitetura BFF
 
-## Regras de código (sempre em contexto)
+## Regras de código
 
-Leia `.opencode/rules/code-conventions.md` — useState, tipagem, tailwind-variants, return early
+As code conventions estão documentadas na skill de arquitetura frontend:
+`.opencode/skills/architecture-frontend/SKILL.md` — useState, tipagem, tailwind-variants, return early, convenções de componentes e providers.
