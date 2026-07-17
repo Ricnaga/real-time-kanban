@@ -9,6 +9,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@kanban/shared": "workspace:*",
     "@urql/core": "^6.0.3",
     "@urql/exchange-graphcache": "^9.0.1",
