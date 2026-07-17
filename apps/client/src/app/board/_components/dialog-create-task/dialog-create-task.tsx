@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { SubmitEvent, useState } from 'react';
 import { useMutation } from 'urql';
 import { Dialog } from 'radix-ui';
 import { CREATE_TASK } from '@/services/graphql/mutations';
@@ -25,7 +25,7 @@ export function DialogCreateTask({
 
   const isSubmitting = createTaskResult.fetching;
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
 
     const trimmedTitle = title.trim();
