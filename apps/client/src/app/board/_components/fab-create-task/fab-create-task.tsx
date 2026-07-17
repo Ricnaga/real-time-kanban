@@ -1,3 +1,4 @@
+import { PlusIcon } from '@heroicons/react/24/outline';
 import { fabStyles } from './fab-create-task.tv';
 
 type FabCreateTaskProps = {
@@ -12,20 +13,7 @@ export function FabCreateTask({ onClick }: FabCreateTaskProps) {
       aria-label="Criar task"
       className={fabStyles()}
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M12 5v14" />
-        <path d="M5 12h14" />
-      </svg>
+      <PlusIcon className="size-6" />
     </button>
   );
 }
