@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { cardTaskStyles } from './card-task.tv';
 import { CardTaskActions } from './_components/card-task-actions';
-import { DeleteTaskDialog } from './_components/delete-task-dialog';
-import { EditTaskDialog } from './_components/edit-task-dialog';
+import { DeleteTaskDialog } from './_components/dialog-delete-task';
+import { EditTaskDialog } from './_components/dialog-edit-task';
 import type { TaskModel } from '@/schemas';
 
 type CardTaskProps = {

@@ -4,7 +4,7 @@ import { useMutation } from 'urql';
 import { Dialog } from 'radix-ui';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { DELETE_TASK } from '@/services/graphql/mutations';
-import { deleteDialogStyles } from './delete-task-dialog.tv';
+import { deleteDialogStyles } from './dialog-delete-task.tv';
 
 type DeleteTaskDialogProps = {
   open: boolean;

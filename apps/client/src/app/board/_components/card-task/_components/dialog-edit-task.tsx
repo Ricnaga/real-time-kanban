@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useMutation } from 'urql';
 import { Dialog } from 'radix-ui';
 import { UPDATE_TASK } from '@/services/graphql/mutations';
-import { editDialogStyles } from './edit-task-dialog.tv';
+import { editDialogStyles } from './dialog-edit-task.tv';
 
 type EditTaskDialogProps = {
   open: boolean;
