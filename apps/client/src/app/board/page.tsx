@@ -1,6 +1,7 @@
 import { getClient } from '@/services/urql-rsc';
 import { GET_ACTIONS } from '@/services/graphql/queries';
 import { Board } from './_components/board';
+import { Text } from '@/components/typography/text/text';
 
 export default async function BoardPage() {
   const client = getClient();
@@ -9,9 +10,9 @@ export default async function BoardPage() {
   if (result.error) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <p className="text-sm text-red-500">
+        <Text as="p" size="2" className="text-red-500">
           Erro ao carregar o board: {result.error.message}
-        </p>
+        </Text>
       </div>
     );
   }
