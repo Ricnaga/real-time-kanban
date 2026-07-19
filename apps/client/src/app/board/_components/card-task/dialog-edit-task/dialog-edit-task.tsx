@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useId } from 'react';
 import { useMutation } from 'urql';
 import { Dialog } from 'radix-ui';
 import { UPDATE_TASK } from '@/services/graphql/mutations';
+import { Label } from '@/components/typography/label/label';
 import { editDialogStyles } from './dialog-edit-task.tv';
 
 type EditTaskDialogProps = {
@@ -24,6 +25,8 @@ export function EditTaskDialog({
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription ?? '');
   const [updateResult, updateTask] = useMutation(UPDATE_TASK);
+  const titleId = useId();
+  const descriptionId = useId();
 
   const styles = editDialogStyles();
 
@@ -70,7 +73,9 @@ export function EditTaskDialog({
           </Dialog.Description>
 
           <form onSubmit={handleSubmit} className={styles.form()}>
+            <Label htmlFor={titleId}>Título</Label>
             <input
+              id={titleId}
               type="text"
               placeholder="Título"
               value={title}
@@ -78,7 +83,9 @@ export function EditTaskDialog({
               className={styles.input()}
               autoFocus
             />
+            <Label htmlFor={descriptionId}>Descrição</Label>
             <textarea
+              id={descriptionId}
               placeholder="Descrição (opcional)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
