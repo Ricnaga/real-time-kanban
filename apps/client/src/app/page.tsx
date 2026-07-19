@@ -1,9 +1,11 @@
+import { Heading } from '@/components/typography/heading/heading';
+
 export default function StatisticsPage() {
   return (
     <div className="flex flex-1 items-center justify-center">
-      <h1 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+      <Heading as="h1" size="2">
         Estatísticas
-      </h1>
+      </Heading>
     </div>
   );
 }
