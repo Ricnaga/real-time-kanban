@@ -12,6 +12,7 @@ type BoardDndContextValue = {
   registerTaskCount: (actionId: string, count: number) => void;
   registerTaskData: (taskId: string, data: TaskModel) => void;
   getTaskData: (taskId: string) => TaskModel | null;
+  getTaskIndex: (taskId: string) => number | null;
 };
 
 const BoardDndContext = createContext<BoardDndContextValue | null>(null);
@@ -68,6 +69,15 @@ export function BoardDndProvider({
     return taskDataMap.current.get(taskId) ?? null;
   }, []);
 
+  const getTaskIndex = useCallback((taskId: string): number | null => {
+    const actionId = taskColumnMap.current.get(taskId);
+    if (!actionId) return null;
+    const tasks = Array.from(taskDataMap.current.entries())
+      .filter(([, data]) => data.actionId === actionId)
+      .sort((a, b) => a[1].position - b[1].position);
+    return tasks.findIndex(([id]) => id === taskId);
+  }, []);
+
   const value = useMemo<BoardDndContextValue>(
     () => ({
       findColumn,
@@ -77,6 +87,7 @@ export function BoardDndProvider({
       registerTaskCount,
       registerTaskData,
       getTaskData,
+      getTaskIndex,
     }),
     [
       findColumn,
@@ -86,6 +97,7 @@ export function BoardDndProvider({
       registerTaskCount,
       registerTaskData,
       getTaskData,
+      getTaskIndex,
     ],
   );
 
