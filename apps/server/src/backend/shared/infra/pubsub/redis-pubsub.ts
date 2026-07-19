@@ -7,6 +7,11 @@ export class RedisPubSub implements IPubSub {
     Set<(data: string) => void>
   >();
 
+  private readonly messageHandlers = new Map<
+    PubSubChannel,
+    (ch: string, data: string) => void
+  >();
+
   constructor(
     private readonly publisher: Redis,
     private readonly subscriber: Redis,
@@ -37,10 +42,6 @@ export class RedisPubSub implements IPubSub {
 
         listeners.add(onData);
 
-        if (this.subscribers.size === 0) {
-          this.subscriber.subscribe(channel);
-        }
-
         return {
           next: () => {
             if (queue.length > 0) {
@@ -59,6 +60,7 @@ export class RedisPubSub implements IPubSub {
             if (listeners.size === 0) {
               this.subscribers.delete(channel);
               this.subscriber.unsubscribe(channel);
+              this.removeMessageHandler(channel);
             }
 
             return Promise.resolve({ value: undefined, done: true });
@@ -69,6 +71,7 @@ export class RedisPubSub implements IPubSub {
             if (listeners.size === 0) {
               this.subscribers.delete(channel);
               this.subscriber.unsubscribe(channel);
+              this.removeMessageHandler(channel);
             }
 
             return Promise.reject(error);
@@ -76,6 +79,14 @@ export class RedisPubSub implements IPubSub {
         };
       },
     };
+  }
+
+  private removeMessageHandler(channel: PubSubChannel): void {
+    const handler = this.messageHandlers.get(channel);
+    if (handler) {
+      this.subscriber.removeListener('message', handler);
+      this.messageHandlers.delete(channel);
+    }
   }
 
   private getOrCreateListeners(
@@ -87,11 +98,14 @@ export class RedisPubSub implements IPubSub {
       listeners = new Set();
       this.subscribers.set(channel, listeners);
 
-      this.subscriber.on('message', (ch: string, data: string) => {
+      const handler = (ch: string, data: string) => {
         if (ch === channel) {
           listeners?.forEach((cb) => cb(data));
         }
-      });
+      };
+      this.messageHandlers.set(channel, handler);
+      this.subscriber.on('message', handler);
+      this.subscriber.subscribe(channel);
     }
 
     return listeners;
