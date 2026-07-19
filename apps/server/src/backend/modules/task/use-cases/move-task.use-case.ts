@@ -48,7 +48,10 @@ export class MoveTaskUseCase {
     const updates = reordered.map((t, i) => ({ id: t.id, position: i }));
     await this.taskRepo.updatePositions(updates);
 
-    return this.taskRepo.findByActionId(newActionId);
+    const destTasks = await this.taskRepo.findByActionId(newActionId);
+    const sourceTasks = await this.taskRepo.findByActionId(oldActionId);
+
+    return [...destTasks, ...sourceTasks];
   }
 
   private async reorderWithinAction(
@@ -70,6 +73,6 @@ export class MoveTaskUseCase {
     const updates = reordered.map((t, i) => ({ id: t.id, position: i }));
     await this.taskRepo.updatePositions(updates);
 
-    return reordered;
+    return this.taskRepo.findByActionId(task.actionId);
   }
 }
