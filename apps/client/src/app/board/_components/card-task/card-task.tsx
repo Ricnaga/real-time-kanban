@@ -6,6 +6,7 @@ import { cardTaskStyles } from './card-task.tv';
 import { CardTaskActions } from './card-task-actions/card-task-actions';
 import { DeleteTaskDialog } from './dialog-delete-task/dialog-delete-task';
 import { EditTaskDialog } from './dialog-edit-task/dialog-edit-task';
+import { Text } from '@/components/typography/text/text';
 import type { TaskModel } from '@/schemas';
 
 type CardTaskProps = {
@@ -48,13 +49,13 @@ export function CardTask({ task, isOverlay = false }: CardTaskProps) {
         {...attributes}
         {...listeners}
       >
-        <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+        <Text as="span" size="2" weight="medium">
           {task.title}
-        </span>
+        </Text>
         {task.description && (
-          <span className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 line-clamp-2">
+          <Text as="span" size="1" color="muted" className="mt-1 line-clamp-2">
             {task.description}
-          </span>
+          </Text>
         )}
         <CardTaskActions
           onEdit={() => setEditDialogOpen(true)}
