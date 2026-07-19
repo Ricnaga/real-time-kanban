@@ -13,6 +13,8 @@ import {
 } from '@dnd-kit/core';
 import { useMutation } from 'urql';
 import { useActions } from '@/services/hooks/use-actions';
+import { useTasksSubscription } from '@/services/hooks/use-tasks-subscription';
+import { useActionsSubscription } from '@/services/hooks/use-actions-subscription';
 import { MOVE_TASK } from '@/services/graphql/mutations';
 import { BoardColumn } from './board-column/board-column';
 import { BoardDndProvider, useBoardDnd } from '../_providers/board-dnd-context';
@@ -31,7 +33,7 @@ export function Board({ initialActions }: Props) {
   });
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const sortedActions = actions.sort((a, b) => a.position - b.position);
+  const sortedActions = [...actions].sort((a, b) => a.position - b.position);
   const firstActionId = sortedActions[0]?.id;
   const columnIds = useMemo(
     () => sortedActions.map((a) => a.id),
@@ -86,7 +88,15 @@ type BoardDndLayerProps = {
 function BoardDndLayer({ sortedActions }: BoardDndLayerProps) {
   const [activeTask, setActiveTask] = useState<TaskModel | null>(null);
   const [, moveTask] = useMutation(MOVE_TASK);
-  const { findColumn, getTaskCount, getTaskData } = useBoardDnd();
+  const { findColumn, getTaskCount, getTaskData, getTaskIndex } = useBoardDnd();
+
+  useTasksSubscription();
+  useActionsSubscription();
+
+  const columnIds = useMemo(
+    () => sortedActions.map((a) => a.id),
+    [sortedActions],
+  );
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -119,16 +129,27 @@ function BoardDndLayer({ sortedActions }: BoardDndLayerProps) {
       const overColumnId = findColumn(overId);
       if (!overColumnId) return;
 
-      const taskCount = getTaskCount(overColumnId);
-      const newPosition = taskCount > 0 ? taskCount : 0;
+      const isOverTask = !columnIds.includes(overId);
+      let newPosition = getTaskCount(overColumnId);
+
+      if (isOverTask) {
+        const overIndex = getTaskIndex(overId);
+        if (overIndex !== null) {
+          newPosition = overIndex;
+        }
+      }
 
       moveTask({
         taskId,
         newPosition,
         newActionId: overColumnId,
+      }).then(({ error }) => {
+        if (error) {
+          console.error('Erro ao mover task:', error.message);
+        }
       });
     },
-    [findColumn, getTaskCount, moveTask],
+    [findColumn, getTaskCount, getTaskIndex, moveTask, columnIds],
   );
 
   return (
