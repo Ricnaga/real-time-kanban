@@ -129,10 +129,19 @@ export function makeClient() {
           });
           if (!actionsData?.actions) return;
 
-          const destActionId = tasks[0].actionId;
+          const tasksByAction = new Map<
+            string,
+            TasksByActionData['tasksByAction']
+          >();
+          for (const task of tasks) {
+            const existing = tasksByAction.get(task.actionId) ?? [];
+            existing.push(task);
+            tasksByAction.set(task.actionId, existing);
+          }
 
           for (const action of actionsData.actions) {
-            if (action.id === destActionId) {
+            const updatedTasks = tasksByAction.get(action.id);
+            if (updatedTasks) {
               cache.updateQuery<TasksByActionData>(
                 {
                   query: GET_TASKS_BY_ACTION,
@@ -140,22 +149,7 @@ export function makeClient() {
                 },
                 (data) => {
                   if (!data) return data;
-                  return { tasksByAction: tasks };
-                },
-              );
-            } else {
-              cache.updateQuery<TasksByActionData>(
-                {
-                  query: GET_TASKS_BY_ACTION,
-                  variables: { actionId: action.id },
-                },
-                (data) => {
-                  if (!data) return data;
-                  return {
-                    tasksByAction: data.tasksByAction.filter(
-                      (t) => !tasks.some((m) => m.id === t.id),
-                    ),
-                  };
+                  return { tasksByAction: updatedTasks };
                 },
               );
             }
