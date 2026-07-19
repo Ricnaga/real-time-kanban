@@ -45,3 +45,6 @@ apps/server/src/backend/infra/database/drizzle/migrations/
 
 # prisma
 apps/server/src/backend/infra/database/prisma/client/
+
+# turbo
+.turbo/
