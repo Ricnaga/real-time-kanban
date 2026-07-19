@@ -120,15 +120,19 @@ export function makeClient() {
           }
         },
         taskMoved: (result, _args, cache) => {
-          const task = result.taskMoved as
-            TasksByActionData['tasksByAction'][number] | null;
-          if (!task) return;
+          const tasks = result.taskMoved as
+            TasksByActionData['tasksByAction'] | null;
+          if (!tasks || tasks.length === 0) return;
+
           const actionsData = cache.readQuery<ActionsData>({
             query: GET_ACTIONS,
           });
           if (!actionsData?.actions) return;
+
+          const destActionId = tasks[0].actionId;
+
           for (const action of actionsData.actions) {
-            if (action.id === task.actionId) {
+            if (action.id === destActionId) {
               cache.updateQuery<TasksByActionData>(
                 {
                   query: GET_TASKS_BY_ACTION,
@@ -136,14 +140,7 @@ export function makeClient() {
                 },
                 (data) => {
                   if (!data) return data;
-                  const filtered = data.tasksByAction.filter(
-                    (t) => t.id !== task.id,
-                  );
-                  return {
-                    tasksByAction: [...filtered, task].sort(
-                      (a, b) => a.position - b.position,
-                    ),
-                  };
+                  return { tasksByAction: tasks };
                 },
               );
             } else {
@@ -156,7 +153,7 @@ export function makeClient() {
                   if (!data) return data;
                   return {
                     tasksByAction: data.tasksByAction.filter(
-                      (t) => t.id !== task.id,
+                      (t) => !tasks.some((m) => m.id === t.id),
                     ),
                   };
                 },
