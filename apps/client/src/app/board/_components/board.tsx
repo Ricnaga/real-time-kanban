@@ -21,6 +21,7 @@ import { BoardDndProvider, useBoardDnd } from '../_providers/board-dnd-context';
 import { FabCreateTask } from './fab-create-task/fab-create-task';
 import { DialogCreateTask } from './dialog-create-task/dialog-create-task';
 import { CardTask } from './card-task/card-task';
+import { Text } from '@/components/typography/text/text';
 import type { ActionModel, TaskModel } from '@/schemas';
 
 type Props = {
@@ -43,9 +44,9 @@ export function Board({ initialActions }: Props) {
   if (error) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <p className="text-sm text-red-500">
+        <Text as="p" size="2" className="text-red-500">
           Erro ao carregar o board: {error.message}
-        </p>
+        </Text>
       </div>
     );
   }
@@ -55,12 +56,16 @@ export function Board({ initialActions }: Props) {
       <main className="relative flex flex-1 gap-4 p-6 overflow-x-auto">
         {fetching && actions.length === 0 && (
           <div className="flex flex-1 items-center justify-center">
-            <p className="text-sm text-zinc-500">Carregando board...</p>
+            <Text as="p" size="2" color="muted">
+              Carregando board...
+            </Text>
           </div>
         )}
         {!fetching && actions.length === 0 && (
           <div className="flex flex-1 items-center justify-center">
-            <p className="text-sm text-zinc-500">Nenhuma action encontrada</p>
+            <Text as="p" size="2" color="muted">
+              Nenhuma action encontrada
+            </Text>
           </div>
         )}
 
