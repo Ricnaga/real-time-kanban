@@ -1,5 +1,6 @@
 import type { TaskModel } from '../../connectors/task/task.model';
 import { BaseDomain } from '../base.domain';
+import { ActionDomain } from '../action/action.domain';
 
 export class TaskDomain extends BaseDomain {
   static readonly __typename: string = TaskDomain.name;
@@ -19,7 +20,7 @@ export class TaskDomain extends BaseDomain {
     this.title = model.title;
     this.description = model.description;
     this.position = model.position;
-    this.actionId = model.actionId;
+    this.actionId = ActionDomain.uuidToRelay(model.actionId);
     this.createdAt = model.createdAt;
     this.updatedAt = model.updatedAt;
   }
