@@ -6,14 +6,18 @@ Kanban em tempo real com Next.js 16, GraphQL Yoga, Pothos, Drizzle, WebSocket e 
 
 | Camada         | Tecnologia                                        |
 | -------------- | ------------------------------------------------- |
-| **Frontend**   | Next.js 16 (App Router), React 19, TypeScript     |
+| **Frontend**   | Next.js 16 (App Router, Turbopack), React 19      |
 | **Estilos**    | Tailwind CSS v4, `tailwind-variants` (`.tv.ts`)   |
-| **API**        | GraphQL Yoga + Pothos (code-first)                |
-| **Cliente**    | urql + graphql-ws                                 |
+| **API**        | Fastify + GraphQL Yoga + Pothos (code-first)      |
+| **Cliente**    | urql + `@urql/exchange-graphcache` + `graphql-ws` |
 | **Tempo real** | Subscriptions Yoga (WebSocket + Redis Pub/Sub)    |
-| **ORM**        | Drizzle ORM + PostgreSQL                          |
-| **Backend**    | Clean Architecture + Hexagonal (Ports & Adapters) |
+| **ORM**        | Drizzle ORM + PostgreSQL 16                       |
+| **Backend**    | Clean Architecture + DDD + SOLID                  |
+| **DI**         | Inversify (dependency injection)                  |
+| **Cache**      | ioredis (Redis) + memory fallback                 |
 | **Mensageria** | Redis (Pub/Sub para eventos de domínio)           |
+| **Validação**  | Zod (schemas compartilhados)                      |
+| **Métricas**   | prom-client (Prometheus) + Grafana                |
 | **Padrões**    | SOLID, SOC, DRY, YAGNI, KISS, Clean Code          |
 
 ## Estrutura
@@ -21,48 +25,71 @@ Kanban em tempo real com Next.js 16, GraphQL Yoga, Pothos, Drizzle, WebSocket e 
 ```
 real-time-kanban/
 ├── apps/
-│   ├── client/            # Next.js (frontend + urql)
-│   │   ├── src/app/           (pages, layout)
-│   │   └── src/lib/           (urql client, provider)
+│   ├── client/                        # Next.js (frontend + urql)
+│   │   └── src/
+│   │       ├── app/                   # App Router (pages, layout)
+│   │       │   ├── board/             # /board route
+│   │       │   │   ├── _components/   # board-column, card-task, dialogs
+│   │       │   │   └── _providers/    # board-dnd-context
+│   │       │   └── _components/       # statistics-dashboard
+│   │       ├── components/            # Componentes reutilizáveis
+│   │       │   ├── skeleton/
+│   │       │   ├── topbar/
+│   │       │   └── typography/
+│   │       ├── config/                # Environment config
+│   │       ├── schemas/               # Zod validation schemas
+│   │       └── services/              # GraphQL, hooks, urql
 │   │
-│   └── server/            # GraphQL Yoga + Pothos + Clean Arch
-│       ├── src/
-│       │   ├── bff/           # GraphQL layer (Pothos)
-│       │   │   ├── objects/       (Board, Column, Card)
-│       │   │   ├── queries/
-│       │   │   ├── mutations/
-│       │   │   └── subscriptions/
-│       │   ├── backend/        # Clean Architecture
-│       │   │   ├── controllers/   (orquestradores)
-│       │   │   ├── domain/        (entities, use-cases)
-│       │   │   ├── ports/         (interfaces)
-│       │   │   └── infra/         (Drizzle, Redis)
-│       │   └── index.ts         (Yoga server entry)
-│       └── drizzle.config.ts
+│   └── server/                        # Fastify + GraphQL Yoga + Clean Arch
+│       └── src/
+│           ├── bff/                   # GraphQL layer (Pothos)
+│           │   ├── adapters/          # Adapters por domínio
+│           │   ├── connectors/        # Connectors ao backend
+│           │   ├── domain/            # Modelos BFF
+│           │   ├── factories/         # Factory pattern por domínio
+│           │   ├── plugins/           # Yoga plugins
+│           │   └── pothos/            # Schema + resolvers Pothos
+│           ├── backend/               # Clean Architecture + DDD
+│           │   ├── modules/           # action, task, statistics
+│           │   │   ├── controllers/
+│           │   │   ├── dto/
+│           │   │   ├── entities/
+│           │   │   ├── infra/         # Drizzle, Redis cache
+│           │   │   ├── repositories/  # Interfaces (ports)
+│           │   │   ├── use-cases/
+│           │   │   └── value-objects/
+│           │   └── shared/            # DI, controllers base, infra
+│           ├── config/
+│           └── core/                  # Server bootstrap (Fastify, WebSocket)
 │
 ├── packages/
-│   └── shared/            # DTOs e tipos compartilhados
+│   └── shared/                        # DTOs e tipos compartilhados
 │
-├── docker-compose.yml     # PostgreSQL + Redis
+├── docker-compose.yml                 # PostgreSQL, Redis, Prometheus, Grafana
 └── pnpm-workspace.yaml
 ```
 
 ## Arquitetura
 
 ```
-Client (urql) ──HTTP──→ Server Yoga :4000
-              ──WS────→ Server Yoga :4000 (subscriptions)
+Client (urql) ──HTTP──→ Fastify :4000 → GraphQL Yoga
+              ──WS────→ Fastify :4000 → WebSocket (subscriptions)
 
 Server:
-  Yoga → Pothos resolver → Controller → Use Case → Drizzle/DB
-                                             └──→ Redis Pub/Sub → Subscription
+  Yoga → Pothos resolver → Adapter → Connector → Controller
+                                              └──→ Use Case → Drizzle/DB
+                                              └──→ Redis Pub/Sub → Subscription
+
+Backend (Clean Architecture):
+  Controller → Use Case → Repository Interface → Drizzle/Redis
+  Inversify injeta dependências entre as camadas
 ```
 
 ## Pré-requisitos
 
 - Node.js 20+
-- pnpm
-- Docker (PostgreSQL + Redis)
+- pnpm 11+
+- Docker (PostgreSQL, Redis, Prometheus, Grafana)
 
 ## Desenvolvimento
 
@@ -111,10 +138,14 @@ Abra [http://localhost:3000](http://localhost:3000) e [http://localhost:4000/gra
 
 Este projeto usa [OpenCode](https://opencode.ai) como assistente de desenvolvimento. Agentes e skills estão configurados em `.opencode/`:
 
-- `@front-end-engineer` — engenheiro frontend React/Next/Tailwind/Performance
-- `@ux-ui-designer` — designer de componentes e telas
-- `@software-engineer` — especialista BFF/GraphQL/Pothos
-- `@backend-engineer` — especialista Clean Architecture + DDD
+| Agente                | Modo     | Domínio                                       |
+| --------------------- | -------- | --------------------------------------------- |
+| `@front-end-engineer` | primary  | `apps/client/` — React/Next/Tailwind          |
+| `@ux-ui-designer`     | subagent | Design de componentes e telas                 |
+| `@software-engineer`  | subagent | `apps/server/src/bff/` — GraphQL              |
+| `@backend-engineer`   | primary  | `apps/server/src/backend/` — Clean Arch + DDD |
+
+Skills: `design-rules`, `architecture-frontend`, `architecture-backend`, `architecture-bff`.
 
 Comandos customizados: `/lint`, `/format`, `/check`.
 

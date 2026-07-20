@@ -14,6 +14,10 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **URQL** + `@urql/exchange-graphcache` (GraphQL)
 - **Radix UI** (primitivas de acessibilidade)
 - **@dnd-kit** (drag and drop)
+- **Fastify** + **GraphQL Yoga** + **Pothos** (server)
+- **Drizzle ORM** + **PostgreSQL** (ORM + banco)
+- **Inversify** (dependency injection no backend)
+- **ioredis** (cache + pub/sub)
 - **TypeScript** (tipagem forte, sem `any`)
 
 ## Agentes
@@ -24,17 +28,15 @@ This version has breaking changes — APIs, conventions, and file structure may 
   - Desenvolve lógica: consulta skills documentadas e `@software-engineer`.
 
 - `@ux-ui-designer` (`mode: subagent`) — design de componentes e telas,
-  posicionamento, acessibilidade e usabilidade. Invocar com `@ux-ui-designer`.
+  posicionamento, acessibilidade e usabilidade. Invocado pelo `@front-end-engineer`.
 
-- `@software-engineer` (`mode: primary`) — dono do BFF (`apps/server/src/bff/`).
-  GraphQL, Pothos, queries, mutations, subscriptions.
-  Só delivery mechanism — sem regra de negócio.
-  - Consulta `@backend-engineer` para melhorar arquitetura e lógica do BFF.
+- `@software-engineer` (`mode: subagent`) — BFF GraphQL (`apps/server/src/bff/`).
+  Pothos, resolvers, adapters, connectors, context, subscriptions.
+  Sem regra de negócio — só delivery mechanism. Invocado por `@front-end-engineer` ou `@backend-engineer`.
 
 - `@backend-engineer` (`mode: primary`) — dono do backend (`apps/server/src/backend/`).
-  Clean Architecture + DDD: domínio, use cases, ports, infra, controllers.
-  Regra de negócio, sem GraphQL.
-  - Consulta `@software-engineer` para melhorar arquitetura e lógica do backend.
+  Clean Architecture + DDD: domínio, use cases, controllers, infra.
+  Regra de negócio, sem GraphQL. Pode invocar `@software-engineer` via task.
 
 ## Skills (carregar sob demanda)
 
@@ -42,6 +44,12 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `.opencode/skills/architecture-frontend/SKILL.md` — arquitetura frontend
 - `.opencode/skills/architecture-backend/SKILL.md` — arquitetura backend
 - `.opencode/skills/architecture-bff/SKILL.md` — arquitetura BFF
+
+## Commands
+
+- `/lint` — roda `oxlint` no projeto
+- `/format` — roda `prettier --write .`
+- `/check` — roda `oxlint` + `prettier --check .`
 
 ## Regras de código
 
@@ -66,3 +74,45 @@ Toda page deve seguir a estrutura:
 
 - **`Cell` está deprecated** (recharts v3) — usar `shape` prop como função
 - Pattern: `shape={(props) => <Sector {...props} fill={colors[props.index]} />}`
+
+## Estrutura do projeto
+
+```
+real-time-kanban/
+├── apps/
+│   ├── client/                    # Next.js (frontend + urql)
+│   │   └── src/
+│   │       ├── app/               # App Router (pages, layout)
+│   │       ├── components/        # Componentes reutilizáveis
+│   │       ├── config/            # Environment config
+│   │       ├── schemas/           # Zod validation schemas
+│   │       └── services/          # GraphQL (queries, mutations, subscriptions), hooks, urql
+│   │
+│   └── server/                    # Fastify + GraphQL Yoga + Clean Arch
+│       └── src/
+│           ├── bff/               # GraphQL layer (Pothos)
+│           │   ├── adapters/      # Adapters por domínio
+│           │   ├── connectors/    # Connectors ao backend
+│           │   ├── domain/        # Modelos BFF
+│           │   ├── factories/     # Factory pattern por domínio
+│           │   ├── plugins/       # Yoga plugins
+│           │   └── pothos/        # Schema + resolvers Pothos
+│           ├── backend/           # Clean Architecture + DDD
+│           │   ├── modules/       # action, task, statistics
+│           │   │   ├── controllers/
+│           │   │   ├── dto/
+│           │   │   ├── entities/
+│           │   │   ├── infra/     # Drizzle, Redis cache
+│           │   │   ├── repositories/  # Interfaces (ports)
+│           │   │   ├── use-cases/
+│           │   │   └── value-objects/
+│           │   └── shared/        # DI, controllers base, infra
+│           ├── config/
+│           └── core/              # Server bootstrap (Fastify, WebSocket)
+│
+├── packages/
+│   └── shared/            # DTOs e tipos compartilhados
+│
+├── docker-compose.yml     # PostgreSQL, Redis, Prometheus, Grafana
+└── pnpm-workspace.yaml
+```
