@@ -11,11 +11,11 @@ Task.implement({
     position: t.exposeInt('position'),
     actionId: t.exposeID('actionId'),
     createdAt: t.field({
-      type: 'Date',
+      type: 'DateTime',
       resolve: (parent) => parent.createdAt,
     }),
     updatedAt: t.field({
-      type: 'Date',
+      type: 'DateTime',
       resolve: (parent) => parent.updatedAt,
     }),
   }),
