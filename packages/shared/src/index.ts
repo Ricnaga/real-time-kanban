@@ -75,3 +75,6 @@ export type BoardEvent = {
     | 'action:moved';
   payload: BoardDTO | ActionDTO | TaskDTO | ActionStatsDTO;
 };
+
+export type { IPubSub, PubSubChannel } from './types';
+export { AppError } from './types';
