@@ -10,13 +10,20 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell,
+  Sector,
   Legend,
 } from 'recharts';
+import type { PieSectorShapeProps } from 'recharts';
 import { useBoardStatistics } from '@/services/hooks/use-board-statistics';
-import { Text } from '@/components/typography/text/text';
 import { Heading } from '@/components/typography/heading/heading';
+import { Text } from '@/components/typography/text/text';
+import type { BoardStatisticsModel } from '@/schemas';
 import { statisticsDashboardStyles } from './statistics-dashboard.tv';
+import { StatisticsLoading } from './statistics-loading';
+import { StatisticsEmpty } from './statistics-empty';
+import { StatisticsError } from './statistics-error';
+import { StatisticsMetricCard } from './statistics-metric-card';
+import { StatisticsChartCard } from './statistics-chart-card';
 
 const PIE_COLORS = [
   '#6366f1',
@@ -32,53 +39,25 @@ const PIE_COLORS = [
 ];
 
 type StatisticsDashboardProps = {
-  initialData?: {
-    columns: { id: string; title: string; step: string; taskCount: number }[];
-    totalTasks: number;
-  };
+  initialData?: BoardStatisticsModel;
 };
+
+function renderPieShape(props: PieSectorShapeProps) {
+  const fill = PIE_COLORS[(props.index ?? 0) % PIE_COLORS.length];
+  return <Sector {...props} fill={fill} />;
+}
 
 export function StatisticsDashboard({ initialData }: StatisticsDashboardProps) {
   const { statistics, fetching, error } = useBoardStatistics();
   const styles = statisticsDashboardStyles();
 
-  if (fetching && !initialData) {
-    return (
-      <div className={styles.container()}>
-        <div className="flex flex-1 items-center justify-center">
-          <Text as="p" size="2" className="text-zinc-500">
-            Carregando estatisticas...
-          </Text>
-        </div>
-      </div>
-    );
-  }
+  if (fetching && !initialData) return <StatisticsLoading />;
 
-  if (error) {
-    return (
-      <div className={styles.container()}>
-        <div className="flex flex-1 items-center justify-center">
-          <Text as="p" size="2" className="text-red-500">
-            Erro ao carregar estatisticas: {error.message}
-          </Text>
-        </div>
-      </div>
-    );
-  }
+  if (error) return <StatisticsError message={error.message} />;
 
   const data = statistics ?? initialData;
 
-  if (!data) {
-    return (
-      <div className={styles.container()}>
-        <div className="flex flex-1 items-center justify-center">
-          <Text as="p" size="2" className="text-zinc-500">
-            Nenhum dado disponivel
-          </Text>
-        </div>
-      </div>
-    );
-  }
+  if (!data) return <StatisticsEmpty />;
 
   const barData = data.columns.map((col) => ({
     name: col.title,
@@ -96,6 +75,11 @@ export function StatisticsDashboard({ initialData }: StatisticsDashboardProps) {
     data.columns[0],
   );
 
+  const average =
+    data.columns.length > 0
+      ? Math.round(data.totalTasks / data.columns.length)
+      : 0;
+
   return (
     <div className={styles.container()}>
       <div className={styles.header()}>
@@ -107,48 +91,21 @@ export function StatisticsDashboard({ initialData }: StatisticsDashboardProps) {
         </Text>
       </div>
 
-      <div className={styles.metricsGrid()}>
-        <div className={styles.metricCard()}>
-          <Text as="span" className={styles.metricLabel()}>
-            Total de Cards
-          </Text>
-          <Text as="span" className={styles.metricValue()}>
-            {data.totalTasks}
-          </Text>
-        </div>
-        <div className={styles.metricCard()}>
-          <Text as="span" className={styles.metricLabel()}>
-            Total de Colunas
-          </Text>
-          <Text as="span" className={styles.metricValue()}>
-            {data.columns.length}
-          </Text>
-        </div>
-        <div className={styles.metricCard()}>
-          <Text as="span" className={styles.metricLabel()}>
-            Coluna com Mais Cards
-          </Text>
-          <Text as="span" className={styles.metricValue()}>
-            {maxColumn?.title ?? '-'}
-          </Text>
-        </div>
-        <div className={styles.metricCard()}>
-          <Text as="span" className={styles.metricLabel()}>
-            Media por Coluna
-          </Text>
-          <Text as="span" className={styles.metricValue()}>
-            {data.columns.length > 0
-              ? Math.round(data.totalTasks / data.columns.length)
-              : 0}
-          </Text>
-        </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatisticsMetricCard label="Total de Cards" value={data.totalTasks} />
+        <StatisticsMetricCard
+          label="Total de Colunas"
+          value={data.columns.length}
+        />
+        <StatisticsMetricCard
+          label="Coluna com Mais Cards"
+          value={maxColumn?.title ?? '-'}
+        />
+        <StatisticsMetricCard label="Media por Coluna" value={average} />
       </div>
 
-      <div className={styles.chartsGrid()}>
-        <div className={styles.chartCard()}>
-          <Text as="span" className={styles.chartTitle()}>
-            Cards por Coluna
-          </Text>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <StatisticsChartCard title="Cards por Coluna">
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={barData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" />
@@ -158,12 +115,9 @@ export function StatisticsDashboard({ initialData }: StatisticsDashboardProps) {
               <Bar dataKey="tasks" fill="#6366f1" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </StatisticsChartCard>
 
-        <div className={styles.chartCard()}>
-          <Text as="span" className={styles.chartTitle()}>
-            Distribuicao por Coluna
-          </Text>
+        <StatisticsChartCard title="Distribuicao por Coluna">
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -174,19 +128,13 @@ export function StatisticsDashboard({ initialData }: StatisticsDashboardProps) {
                 outerRadius={100}
                 paddingAngle={4}
                 dataKey="value"
-              >
-                {pieData.map((_, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={PIE_COLORS[index % PIE_COLORS.length]}
-                  />
-                ))}
-              </Pie>
+                shape={renderPieShape}
+              />
               <Tooltip />
               <Legend />
             </PieChart>
           </ResponsiveContainer>
-        </div>
+        </StatisticsChartCard>
       </div>
     </div>
   );
