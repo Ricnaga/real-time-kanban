@@ -70,11 +70,11 @@ Server:
 # Infra
 docker compose up -d
 
-# Server
-pnpm server         # GraphQL API em :4000
+# Server (terminal 1)
+pnpm start:server   # GraphQL API em :4000
 
-# Client (outro terminal)
-pnpm dev            # Next.js em :3000
+# Client (terminal 2)
+pnpm start:client   # Next.js em :3000
 
 # Migrations (primeira vez)
 pnpm --filter @kanban/server db:push
@@ -86,8 +86,9 @@ Abra [http://localhost:3000](http://localhost:3000) e [http://localhost:4000/gra
 
 | Comando                                  | Descrição                            |
 | ---------------------------------------- | ------------------------------------ |
-| `pnpm dev`                               | Inicia Next.js (client)              |
-| `pnpm server`                            | Inicia GraphQL Yoga (server)         |
+| `pnpm start`                             | Inicia client e server (turbo dev)   |
+| `pnpm start:server`                      | Inicia GraphQL Yoga (server)         |
+| `pnpm start:client`                      | Inicia Next.js (client)              |
 | `pnpm build`                             | Build de produção                    |
 | `pnpm lint`                              | Verifica código com Oxlint           |
 | `pnpm lint:fix`                          | Corrige erros automáticos com Oxlint |
@@ -96,6 +97,7 @@ Abra [http://localhost:3000](http://localhost:3000) e [http://localhost:4000/gra
 | `pnpm db:push`                           | Push schema Drizzle ao banco         |
 | `pnpm db:generate`                       | Gera migrations Drizzle              |
 | `pnpm db:migrate`                        | Aplica migrations pendentes          |
+| `pnpm db:seed`                           | Popula banco com dados iniciais      |
 | `pnpm --filter @kanban/server typecheck` | Type check server                    |
 | `pnpm --filter @kanban/client typecheck` | Type check client                    |
 
@@ -111,6 +113,8 @@ Este projeto usa [OpenCode](https://opencode.ai) como assistente de desenvolvime
 
 - `@front-end-engineer` — engenheiro frontend React/Next/Tailwind/Performance
 - `@ux-ui-designer` — designer de componentes e telas
+- `@software-engineer` — especialista BFF/GraphQL/Pothos
+- `@backend-engineer` — especialista Clean Architecture + DDD
 
 Comandos customizados: `/lint`, `/format`, `/check`.
 
