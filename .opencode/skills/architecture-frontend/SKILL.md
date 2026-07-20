@@ -32,6 +32,9 @@ src/
       _providers/         # Contextos da page (se necessário)
         <context>.tsx
   components/       # Componentes reutilizáveis (globais)
+    typography/     # Componentes tipográficos (Heading, Text, Label)
+    skeleton/       # Componente de carregamento visual
+    topbar/         # Barra de navegação
   config/           # Environment variables (Zod validation)
   schemas/          # Schemas Zod + tipos derivados das entidades
   services/         # GraphQL ops, hooks, cliente urql

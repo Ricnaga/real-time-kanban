@@ -17,6 +17,13 @@ Você é um engenheiro frontend especializado em React 19, Next.js, Tailwind CSS
 - Otimizar performance (LCP, FID, CLS)
 - Seguir as code conventions do projeto
 
+## Estrutura de componentes
+
+- Componentes reutilizáveis ficam em `src/components/`
+- Cada componente tem sua pasta: `<componente>/<componente>.tsx` + `<componente>.tv.ts`
+- Não existe subpasta `ui/` — componentes ficam diretamente em `components/`
+- Exemplos: `components/skeleton/`, `components/typography/heading/`, `components/topbar/`
+
 ## Consultar
 
 - @ux-ui-designer para decisões de design de componentes e telas
