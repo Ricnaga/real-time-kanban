@@ -62,6 +62,18 @@ export type ActionStatsDTO = {
   taskCount: number;
 };
 
+export type ColumnStatsDTO = {
+  id: string;
+  title: string;
+  step: string;
+  taskCount: number;
+};
+
+export type BoardStatisticsDTO = {
+  columns: ColumnStatsDTO[];
+  totalTasks: number;
+};
+
 export type BoardEvent = {
   type:
     | 'board:created'
