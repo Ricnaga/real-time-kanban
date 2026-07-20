@@ -523,6 +523,119 @@ tasks:
 
 ---
 
+## Cache (Redis + Decorator Pattern)
+
+O Redis já está presente no stack para Pub/Sub e **também é usado para cache** de operações de leitura de alta frequência. O cache é implementado via **Decorator Pattern** na camada de infraestrutura, transparente para use cases e controllers — o domínio não sabe que cache existe.
+
+### Arquitetura
+
+```
+UseCase
+    ↓
+IActionRepository / ITaskRepository (port)
+    ↓
+Cached*Repository (decorator) ← ICacheService (port)
+    ↓
+Drizzle*Repository (puro, só persistência)
+    ↓
+Database (PostgreSQL)
+```
+
+### Princípios SOLID respeitados
+
+| Princípio | Como                                                                 |
+| --------- | -------------------------------------------------------------------- |
+| **SRP**   | `Drizzle*Repository` só persiste; `Cached*Repository` só cacheia     |
+| **OCP**   | Cache pode ser ligado/desligado no DI sem alterar código existente   |
+| **DIP**   | Ambos dependem de `IActionRepository`/`ITaskRepository` (abstrações) |
+
+### Interface (Port)
+
+Definida em `shared/interfaces/cache.interface.ts`:
+
+```typescript
+interface ICacheService {
+  get<T>(key: string): Promise<T | null>;
+  set(key: string, value: unknown, ttl?: number): Promise<void>;
+  del(key: string): Promise<void>;
+}
+```
+
+### Implementações
+
+| Implementação        | Local                         | Quando usar             |
+| -------------------- | ----------------------------- | ----------------------- |
+| `RedisCacheService`  | `infra/cache/redis-cache.ts`  | `REDIS_URL` configurado |
+| `MemoryCacheService` | `infra/cache/memory-cache.ts` | Fallback sem Redis      |
+
+A factory `createCache()` em `infra/cache/index.ts` escolhe automaticamente baseada em `REDIS_URL`.
+
+### Chaves de cache
+
+| Chave                          | Conteúdo                                | TTL segurança |
+| ------------------------------ | --------------------------------------- | ------------- |
+| `actions:list:all`             | `Action[]` serializada (findAll)        | 60s           |
+| `actions:detail:{actionId}`    | `Action` única (findById)               | 30s           |
+| `tasks:list:action:{actionId}` | `Task[]` de uma coluna (findByActionId) | 60s           |
+| `tasks:detail:{taskId}`        | `Task` única (findById)                 | 30s           |
+
+### Invalidação
+
+Cada operação de escrita no decorator invalida as chaves afetadas **após** delegar ao repositório puro:
+
+| Operação de escrita               | Chaves invalidadas                                         |
+| --------------------------------- | ---------------------------------------------------------- |
+| `CreateActionUseCase`             | `actions:list:all`                                         |
+| `UpdateActionUseCase`             | `actions:list:all`, `actions:detail:{id}`                  |
+| `DeleteActionUseCase`             | `actions:list:all`, `actions:detail:{id}`                  |
+| `MoveActionUseCase`               | `actions:list:all`                                         |
+| `CreateTaskUseCase`               | `tasks:list:action:{actionId}`                             |
+| `UpdateTaskUseCase`               | `tasks:list:action:{actionId}`, `tasks:detail:{id}`        |
+| `DeleteTaskUseCase`               | `tasks:list:action:{actionId}`, `tasks:detail:{id}`        |
+| `MoveTaskUseCase` (mesma coluna)  | `tasks:list:action:{actionId}`                             |
+| `MoveTaskUseCase` (entre colunas) | `tasks:list:action:{oldAId}`, `tasks:list:action:{newAId}` |
+
+### Regras
+
+1. **Cache apenas leitura** — apenas resultados de queries `SELECT`
+2. **TTL é segurança, não expiração primária** — invalidação é event-driven
+3. **Serialização explícita** — decorators serializam/deserializam entidades (dates viram ISO strings)
+4. **Cache opcional** — `MemoryCacheService` é fallback se `REDIS_URL` não configurada
+5. **Sem cache em `findAll` de task** — método não usado por nenhum use case
+6. **Decorator delega ao repositório puro** — o decorator nunca contorna o `inner`
+
+### DI Wiring (Decorator Composition)
+
+No container Inversify, o **decorator envolve o repositório puro**:
+
+```typescript
+// base.di.ts
+
+// 1. Cache service — instância única, reusada por todos os decorators
+const cacheService = createCache();
+
+// 2. Repository puro (só banco)
+const actionRepo = new DrizzleActionRepository(drizzleDB);
+
+// 3. Decorator envolve o repositório puro com cache
+container
+  .bind<IActionRepository>(TYPES.Repositories.Action)
+  .toConstantValue(new CachedActionRepository(actionRepo, cacheService));
+
+// 4. Use cases recebem IActionRepository — não sabem que cache existe
+// 5. Se quiser injetar ICacheService em outro lugar:
+container.bind<ICacheService>(TYPES.Cache).toConstantValue(cacheService);
+```
+
+### O que NÃO é cacheado
+
+- `findByName(name)` — chamada infrequente, sem cache
+- `count()` / `countByActionId()` — chamada só no create position, sem cache
+- `findAll()` de task — método não usado por use cases
+- Operações de reordenação internas — usam dados frescos
+
+---
+
 ## Fluxo de dependência
 
 ```
