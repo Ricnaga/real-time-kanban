@@ -6,4 +6,7 @@ export const TYPES = {
     Action: Symbol.for('ActionRepository'),
     Task: Symbol.for('TaskRepository'),
   },
+  Controllers: {
+    Statistics: Symbol.for('StatisticsController'),
+  },
 };
