@@ -20,15 +20,16 @@ src/
   app/              # App Router (pages, layouts, loading, error)
     <route>/
       page.tsx            # Server component (page)
-      loading.tsx         # Loading state
-      error.tsx           # Error boundary
+      loading.tsx         # Loading state (server component — skeleton)
+      error.tsx           # Error boundary (client component — react-error-boundary)
       _components/        # Componentes da page (client components)
         <component>/
-          <component>.tsx     # Componente
+          <component>.tsx     # Componente principal
           <component>.tv.ts   # Estilos (tailwind-variants)
-          <sub-component>/
-            <sub-component>.tsx
-            <sub-component>.tv.ts
+          <component>-loading.tsx   # Loading state client-side
+          <component>-empty.tsx     # Empty state
+          <component>-error.tsx     # Error state (GraphQL/subscription)
+          <sub-component>.tsx       # Sub-componentes reutilizáveis
       _providers/         # Contextos da page (se necessário)
         <context>.tsx
   components/       # Componentes reutilizáveis (globais)
@@ -76,11 +77,34 @@ card-task/
 
 - Cada componente tem sua pasta: `<componente>/<componente>.tsx` + `<componente>/<componente>.tv.ts`
 - Sub-componentes seguem o mesmo padrão em pastas próprias dentro do componente pai
+- **Sub-componentes de estado** (`-loading.tsx`, `-empty.tsx`, `-error.tsx`) ficam na mesma pasta do componente pai como arquivos soltos (sem subpasta)
+- **Sub-componentes reutilizáveis** (ex: `metric-card`, `chart-card`) também ficam como arquivos soltos na pasta do componente pai
 - Prefira `type` sobre `interface` para props
 - Props são tipadas com tipo nomeado antes do componente
 - `useState` com no máximo 3 estados; 3+ estados são agrupados em objeto tipado
 - Return early para evitar else/switch aninhado
 - Usar `useCallback`/`useMemo` apenas quando há benefício mensurável (evitar premature optimization)
+- **Tipagem reutilizável**: props que recebem entidades devem reutilizar os types dos schemas (`z.infer`), não tipar inline
+
+### Next.js Route Conventions
+
+Toda page deve ter `loading.tsx` e `error.tsx` no nível da rota:
+
+| Arquivo       | Tipo             | Papel                                                   |
+| ------------- | ---------------- | ------------------------------------------------------- |
+| `loading.tsx` | Server Component | Skeleton exibido durante fetch server-side (RSC)        |
+| `error.tsx`   | Client Component | Error boundary com `react-error-boundary` + `resetKeys` |
+
+**Dupla camada de loading:**
+
+- `loading.tsx` (rota) — exibido durante o fetch inicial do Server Component
+- `<component>-loading.tsx` (_components) — exibido quando `fetching && !initialData` no client
+
+**Três camadas de error:**
+
+- `error.tsx` (rota) — captura erros do render tree do Server Component
+- `<component>.tsx` com `<ErrorBoundary>` — captura erros de runtime no client
+- `<component>-error.tsx` (_components) — exibe erros de GraphQL/subscription inline
 
 ### Providers (contextos)
 
@@ -172,3 +196,19 @@ config/
 - Prefira composição de Server Components sobre Client Components.
 - `use()` pode ser usado para ler promises diretamente em Server Components.
 - Form handling com `<form action={}>` para Server Actions quando aplicável.
+
+### Layout Responsivo
+
+- Use `Grid` do Tailwind CSS para layouts em grade responsivos: `grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4`
+- Use `Flex` do Tailwind CSS para layouts flex: `flex flex-col gap-1`
+- Breakpoints: `sm` (640px), `md` (768px), `lg` (1024px)
+- Grid patterns comuns:
+  - Métricas: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-4`
+  - Gráficos: `grid-cols-1 lg:grid-cols-2`
+  - Cards: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`
+
+### Recharts
+
+- **`Cell` está deprecated** (recharts v3) — usar `shape` prop no `<Pie>` ou `<Bar>` como função
+- Pattern correto: `shape={(props) => <Sector {...props} fill={colors[props.index]} />}`
+- Não usar `<Cell>` como filho — será removido no recharts v4

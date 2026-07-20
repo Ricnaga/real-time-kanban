@@ -47,3 +47,22 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 As code conventions estão documentadas na skill de arquitetura frontend:
 `.opencode/skills/architecture-frontend/SKILL.md` — useState, tipagem, tailwind-variants, return early, convenções de componentes e providers.
+
+### Convenções de Page (Next.js App Router)
+
+Toda page deve seguir a estrutura:
+
+- `page.tsx` — Server Component, busca dados via RSC, passa como props
+- `loading.tsx` — Server Component, skeleton exibido durante fetch server-side
+- `error.tsx` — Client Component, error boundary com `react-error-boundary`
+- `_components/` — Client components da page
+  - `<component>.tsx` + `<component>.tv.ts` — componente principal + estilos
+  - `<component>-loading.tsx` — loading state client-side
+  - `<component>-empty.tsx` — empty state
+  - `<component>-error.tsx` — error state GraphQL
+  - Sub-componentes reutilizáveis como arquivos soltos na pasta
+
+### Recharts
+
+- **`Cell` está deprecated** (recharts v3) — usar `shape` prop como função
+- Pattern: `shape={(props) => <Sector {...props} fill={colors[props.index]} />}`
