@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql';
 import type { MaskError } from 'graphql-yoga';
-import { AppError } from '@/backend/shared/errors';
+import { AppError } from '@kanban/shared';
 
 export const maskError: MaskError = (error) => {
   if (error instanceof AppError) {
@@ -9,7 +9,7 @@ export const maskError: MaskError = (error) => {
     });
   }
 
-  return new GraphQLError('Internal server error', {
+  return new GraphQLError('Erro interno do servidor', {
     extensions: { statusCode: 500 },
   });
 };

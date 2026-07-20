@@ -1,9 +1,7 @@
 import { adapters } from '@/bff/adapters';
 import type { IActionPort } from '@/bff/adapters';
 import type { ITaskPort } from '@/bff/adapters';
-import type { IPubSub } from '@/backend/shared/interfaces';
-import { TYPES } from '@/backend/shared/container/di/types';
-import container from '@/backend/shared/container/di/base.di';
+import type { IPubSub } from '@kanban/shared';
 
 export type Context = {
   adapters: {
@@ -13,7 +11,7 @@ export type Context = {
   pubSub: IPubSub;
 };
 
-export const context = (): Context => ({
+export const createContext = (pubSub: IPubSub) => (): Context => ({
   adapters,
-  pubSub: container.get<IPubSub>(TYPES.PubSub),
+  pubSub,
 });
