@@ -53,6 +53,8 @@ export function makeClient() {
     keys: {
       Action: (data) => data.id as string,
       Task: (data) => data.id as string,
+      BoardStatistics: () => null,
+      ColumnStats: (data) => data.id as string,
     },
     updates: {
       Subscription: {
