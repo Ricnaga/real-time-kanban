@@ -1,11 +1,14 @@
-import { Heading } from '@/components/typography/heading/heading';
+import { getClient } from '@/services/urql-rsc';
+import { GET_BOARD_STATISTICS } from '@/services/graphql/queries';
+import { StatisticsDashboard } from './_components/statistics-dashboard/statistics-dashboard';
 
-export default function StatisticsPage() {
+export default async function StatisticsPage() {
+  const client = getClient();
+  const result = await client.query(GET_BOARD_STATISTICS, {});
+
   return (
-    <div className="flex flex-1 items-center justify-center">
-      <Heading as="h1" size="2">
-        Estatísticas
-      </Heading>
-    </div>
+    <StatisticsDashboard
+      initialData={result.data?.boardStatistics ?? undefined}
+    />
   );
 }

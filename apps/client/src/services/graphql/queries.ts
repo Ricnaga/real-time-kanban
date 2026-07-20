@@ -24,3 +24,17 @@ export const GET_TASKS_BY_ACTION = gql`
     }
   }
 `;
+
+export const GET_BOARD_STATISTICS = gql`
+  query GetBoardStatistics {
+    boardStatistics {
+      columns {
+        id
+        title
+        step
+        taskCount
+      }
+      totalTasks
+    }
+  }
+`;
