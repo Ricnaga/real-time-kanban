@@ -3,7 +3,7 @@ import { useServer } from 'graphql-ws/use/ws';
 import type { YogaServerInstance } from 'graphql-yoga';
 import type http from 'node:http';
 import { WebSocketServer } from 'ws';
-import type { Context } from './bff/context';
+import type { Context } from '../bff/context';
 
 interface EnvelopedExecutionArgs extends ExecutionArgs {
   rootValue: {

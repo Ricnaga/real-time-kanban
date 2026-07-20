@@ -1,6 +1,6 @@
 import { initInstance } from './backend/instance';
 import { createGraphQLHandler } from './bff/graphql';
-import { initServer } from './server';
+import { initServer } from './core';
 
 async function main() {
   const status = await initInstance();

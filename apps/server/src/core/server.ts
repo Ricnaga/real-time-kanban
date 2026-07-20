@@ -1,9 +1,9 @@
 import fastify from 'fastify';
 import type { YogaServerInstance } from 'graphql-yoga';
-import type { Context } from './bff/context';
-import { loadEnvironment } from './config';
-import { initStartupLogs } from './utils/server.logs';
-import type { StatusLine } from './utils/server.logs';
+import type { Context } from '../bff/context';
+import { loadEnvironment } from '../config';
+import { initStartupLogs } from '../utils/server.logs';
+import type { StatusLine } from '../utils/server.logs';
 import { initWebSocket } from './websocket';
 
 export function initServer(
