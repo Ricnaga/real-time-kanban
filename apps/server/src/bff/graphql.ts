@@ -2,15 +2,14 @@ import { createYoga } from 'graphql-yoga';
 import { plugins, maskError } from './plugins';
 import { schema } from './pothos/schema';
 import { createContext } from './context';
-import type { IPubSub } from '@kanban/shared';
 
-export function createGraphQLHandler(pubSub: IPubSub) {
+export function createGraphQLHandler() {
   return createYoga({
     schema,
     graphqlEndpoint: '/graphql',
     fetchAPI: { Response },
     plugins,
-    context: createContext(pubSub),
+    context: createContext(),
     maskedErrors: { maskError, errorMessage: 'Erro interno do servidor' },
   });
 }
