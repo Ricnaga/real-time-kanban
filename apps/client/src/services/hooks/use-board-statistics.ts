@@ -11,6 +11,7 @@ type StatisticsQueryResult = {
 export function useBoardStatistics() {
   const [queryResult] = useQuery<StatisticsQueryResult>({
     query: GET_BOARD_STATISTICS,
+    requestPolicy: 'network-only',
   });
 
   return {
