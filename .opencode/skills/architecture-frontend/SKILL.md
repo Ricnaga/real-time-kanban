@@ -140,16 +140,20 @@ services/
     subscriptions.ts  # Documents das subscriptions (gql)
   hooks/
     use-<module>.ts   # Hooks que combinam useQuery + lógica
-  urql-client.ts      # Cliente urql (graphcache + subscriptionExchange)
+  cache-exchange.ts   # Config do graphcache (keys + subscription handlers)
+  urql-client.ts      # Cliente urql (WebSocket + exchanges)
   urql-provider.tsx   # Provider React para o cliente urql
+  urql-rsc.ts         # Registro RSC para server-side fetching
 ```
 
 ### Regras
 
 - Operações GraphQL ficam em `services/graphql/` — um arquivo por tipo de operação
 - Hooks combinam `useQuery` + lógica em um único hook por entidade
-- O cliente urql usa `@urql/exchange-graphcache` para cache normalizada
+- `cache-exchange.ts` exporta o `graphCache` configurado com keys de normalização e handlers de `updates.Subscription`
+- `urql-client.ts` monta o WebSocket client, cria os exchanges e instancia o `Client` usando o `graphCache`
 - Subscriptions atualizam a cache via `updates.Subscription` no `cacheExchange` (não via `useSubscription` com handler)
+- Queries que precisam sempre de dados frescos usam `requestPolicy: 'network-only'` (ex: estatísticas)
 
 ## Config layer
 

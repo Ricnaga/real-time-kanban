@@ -87,6 +87,12 @@ real-time-kanban/
 │   │       ├── config/            # Environment config
 │   │       ├── schemas/           # Zod validation schemas
 │   │       └── services/          # GraphQL (queries, mutations, subscriptions), hooks, urql
+│   │           ├── graphql/       # Documents GraphQL (queries, mutations, subscriptions)
+│   │           ├── hooks/         # Hooks que combinam useQuery + lógica
+│   │           ├── cache-exchange.ts  # Config do graphcache (keys + subscription handlers)
+│   │           ├── urql-client.ts     # Cliente urql (WebSocket + exchanges)
+│   │           ├── urql-provider.tsx  # Provider React para o cliente urql
+│   │           └── urql-rsc.ts        # Registro RSC para server-side fetching
 │   │
 │   └── server/                    # Fastify + GraphQL Yoga + Clean Arch
 │       └── src/
