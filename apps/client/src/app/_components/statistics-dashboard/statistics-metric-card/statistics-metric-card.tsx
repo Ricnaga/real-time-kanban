@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { Text } from '@/components/typography/text/text';
-import { statisticsDashboardStyles } from './statistics-dashboard.tv';
+import { statisticsMetricCardStyles } from './statistics-metric-card.tv';
 
 type StatisticsMetricCardProps = {
   label: string;
@@ -13,14 +13,14 @@ export function StatisticsMetricCard({
   label,
   value,
 }: StatisticsMetricCardProps) {
-  const styles = statisticsDashboardStyles();
+  const styles = statisticsMetricCardStyles();
 
   return (
-    <div className={styles.metricCard()}>
-      <Text as="span" className={styles.metricLabel()}>
+    <div className={styles.card()}>
+      <Text as="span" className={styles.label()}>
         {label}
       </Text>
-      <Text as="span" className={styles.metricValue()}>
+      <Text as="span" className={styles.value()}>
         {value}
       </Text>
     </div>

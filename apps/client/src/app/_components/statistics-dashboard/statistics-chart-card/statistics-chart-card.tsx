@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { Text } from '@/components/typography/text/text';
-import { statisticsDashboardStyles } from './statistics-dashboard.tv';
+import { statisticsChartCardStyles } from './statistics-chart-card.tv';
 
 type StatisticsChartCardProps = {
   title: string;
@@ -13,11 +13,11 @@ export function StatisticsChartCard({
   title,
   children,
 }: StatisticsChartCardProps) {
-  const styles = statisticsDashboardStyles();
+  const styles = statisticsChartCardStyles();
 
   return (
-    <div className={styles.chartCard()}>
-      <Text as="span" className={styles.chartTitle()}>
+    <div className={styles.card()}>
+      <Text as="span" className={styles.title()}>
         {title}
       </Text>
       {children}

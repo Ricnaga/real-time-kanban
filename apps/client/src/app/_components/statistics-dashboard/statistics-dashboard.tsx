@@ -22,8 +22,8 @@ import { statisticsDashboardStyles } from './statistics-dashboard.tv';
 import { StatisticsLoading } from './statistics-loading';
 import { StatisticsEmpty } from './statistics-empty';
 import { StatisticsError } from './statistics-error';
-import { StatisticsMetricCard } from './statistics-metric-card';
-import { StatisticsChartCard } from './statistics-chart-card';
+import { StatisticsMetricCard } from './statistics-metric-card/statistics-metric-card';
+import { StatisticsChartCard } from './statistics-chart-card/statistics-chart-card';
 
 const PIE_COLORS = [
   '#6366f1',
